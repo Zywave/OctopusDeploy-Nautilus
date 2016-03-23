@@ -5,7 +5,7 @@ namespace Nautilus
 {
     public class Options
     {
-        [Option("server", Required = true, HelpText = "Octopus server address (e.g. http://your-octopus-server/)".)]
+        [Option("server", Required = true, HelpText = "Octopus server address (e.g. http://your-octopus-server/).")]
         public string OctopusServerAddress { get; set; }
 
         [Option("apiKey", Required = true, HelpText = "Octopus API key.")]
