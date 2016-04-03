@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Octopus.Client;
 using Octopus.Client.Model;
+using Octopus.Client.Model.Endpoints;
 
 namespace Nautilus
 {
@@ -15,10 +16,51 @@ namespace Nautilus
 
             _repository = new OctopusRepository(new OctopusServerEndpoint(serverAddress, apiKey));
         }
+        
+        public SystemInfoResource GetSystemInfo() 
+        {
+            var serverStatus = _repository.ServerStatus.GetServerStatus();
+            return _repository.ServerStatus.GetSystemInfo(serverStatus);
+        }
+        
+        public CertificateResource GetGlobalCertificate()
+        {
+            return _repository.Certificates.Get("certificate-global");
+        }
 
         public MachineResource GetMachine(string name)
         {
-            return _repository.Machines.FindOne(m => m.Name == name);
+            return _repository.Machines.FindByName(name);
+        }
+        
+        public MachineResource CreateMachine(string name, string thumbprint, string hostname, int port, IEnumerable<string> environmentNames, IEnumerable<string> roles)
+        {
+            var machine = new MachineResource();
+            
+            machine.Name = name;
+            
+            var environments = _repository.Environments.FindByNames(environmentNames);
+            foreach (var environment in environments)
+            {                
+                machine.EnvironmentIds.Add(environment.Id);
+            }
+           
+            foreach (var role in roles) 
+            {
+                machine.Roles.Add(role);
+            }
+            
+            var endpoint = new ListeningTentacleEndpointResource();
+            endpoint.Uri = $"https://{hostname}:{port}";
+            endpoint.Thumbprint = thumbprint;
+            machine.Endpoint = endpoint;
+            
+            return _repository.Machines.Create(machine);    
+        }
+        
+        public void DeleteMachine(MachineResource machine)
+        {
+            _repository.Machines.Delete(machine);
         }
         
         public IEnumerable<ProjectResource> GetProjects()
