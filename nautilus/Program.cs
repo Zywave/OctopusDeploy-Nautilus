@@ -14,10 +14,11 @@ namespace Nautilus
                | SecurityProtocolType.Tls11
                | SecurityProtocolType.Tls12;
             
-            return CommandLine.Parser.Default.ParseArguments<DeployCommand, InstallCommand, RegisterCommand, UnregisterCommand>(args)
+            return CommandLine.Parser.Default.ParseArguments<DeployCommand, InstallCommand, UpdateCommand, RegisterCommand, UnregisterCommand>(args)
                 .MapResult(
                     (DeployCommand command) => command.Run(),
                     (InstallCommand command) => command.Run(),
+                    (UpdateCommand command) => command.Run(),
                     (RegisterCommand command) => command.Run(),
                     (UnregisterCommand command) => command.Run(),
                     errors => 1);

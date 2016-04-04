@@ -6,7 +6,7 @@ using CommandLine;
 
 namespace Nautilus
 {    
-    [Verb("install", HelpText = "Installs an Octopus tenticle on the local machine.")]
+    [Verb("install", HelpText = "Installs an Octopus Tenticle on the local machine.")]
     public class InstallCommand : CommandBase
     {
         [Option('l', "location", Required = false, HelpText = "The install directory of the Octopus Tenticle. Defaults to Program Files.")]
@@ -36,7 +36,7 @@ namespace Nautilus
                         
             var port = Port ?? 10933;
             
-            var systemInfo = octopus.GetSystemInfo();            
+            var systemInfo = octopus.GetSystemInfo();        
             var downloadVersion = systemInfo.Version;            
             if (Environment.Is64BitOperatingSystem)
             {

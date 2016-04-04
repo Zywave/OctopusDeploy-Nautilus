@@ -54,7 +54,7 @@ namespace Nautilus
             endpoint.Uri = $"https://{hostname}:{port}";
             endpoint.Thumbprint = thumbprint;
             machine.Endpoint = endpoint;
-            
+                        
             return _repository.Machines.Create(machine);    
         }
         
@@ -89,6 +89,20 @@ namespace Nautilus
             };
             
             return _repository.Deployments.Create(deploymentResource);
+        }
+        
+        public TaskResource ExecuteTentacleUpgrade(string machineId)
+        {            
+            var task = _repository.Tasks.ExecuteTentacleUpgrade(null, null, new[] { machineId });
+            _repository.Tasks.WaitForCompletion(task);
+            return task;
+        }
+        
+        public TaskResource ExecuteCalamariUpdate(string machineId)
+        {
+            var task = _repository.Tasks.ExecuteCalamariUpdate(null, new[] { machineId });
+            _repository.Tasks.WaitForCompletion(task);
+            return task;
         }
 
         private IOctopusRepository _repository;
