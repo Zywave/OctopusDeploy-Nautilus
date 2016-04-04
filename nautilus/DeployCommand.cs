@@ -26,7 +26,9 @@ namespace Nautilus
                 return 1;
             }
             
-            WriteLine($"Target machine: {machine.Id} {machine.Name} {String.Join(",", machine.Roles)} {String.Join(",", machine.EnvironmentIds)}");
+            var environments = octopus.GetEnvironments().ToDictionary(i => i.Id);
+            
+            WriteLine($"Target machine: {machine.Id} {machine.Name} {String.Join(",", machine.Roles)} {String.Join(",", machine.EnvironmentIds.Select(e => GetEnvironmentName(e, environments)))}");
             
             WriteLine($"Finding projects with the target roles ({String.Join(",", machine.Roles)})...");
             
@@ -51,7 +53,7 @@ namespace Nautilus
             
             var dashboard = octopus.GetDynamicDashboard(matchedProjects.Keys, machine.EnvironmentIds);
             
-            WriteLine($"Creating deployments for target environments ({String.Join(",", machine.EnvironmentIds)})...");
+            WriteLine($"Creating deployments for target environments ({String.Join(",", machine.EnvironmentIds.Select(e => GetEnvironmentName(e, environments)))})...");
             
             foreach(var item in dashboard.Items)
             {
@@ -59,7 +61,7 @@ namespace Nautilus
                 {
                     var project = matchedProjects[item.ProjectId];
                     var deployment = octopus.CreateDeployment(machine.Id, item.ReleaseId, item.EnvironmentId, $"Nautilus: {machine.Id}");
-                    Write($" {deployment.Id} {project.Name} {item.ReleaseVersion} {item.EnvironmentId}");
+                    Write($" {deployment.Id} {project.Name} {item.ReleaseVersion} -> {GetEnvironmentName(item.EnvironmentId, environments)}");
                     if (Wait) 
                     {
                         Write($"... ");
@@ -92,6 +94,16 @@ namespace Nautilus
             }
             
             return false;
+        }
+        
+        private static string GetEnvironmentName(string environmentId, IDictionary<string, EnvironmentResource> lookup)
+        {
+            EnvironmentResource environment;
+            if (lookup.TryGetValue(environmentId, out environment))
+            {
+                return environment.Name;
+            }
+            return environmentId;
         }
     }
 }

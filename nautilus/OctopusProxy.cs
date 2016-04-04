@@ -68,6 +68,11 @@ namespace Nautilus
             return _repository.Projects.FindAll();
         }
         
+        public IEnumerable<EnvironmentResource> GetEnvironments()
+        {
+            return _repository.Environments.FindAll();
+        }
+        
         public DeploymentProcessResource GetDeploymentProcess(string id)
         {
             return _repository.DeploymentProcesses.Get(id);
