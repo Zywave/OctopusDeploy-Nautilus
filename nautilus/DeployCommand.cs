@@ -9,7 +9,7 @@ namespace Nautilus
     [Verb("deploy", HelpText = "Creates deployments for the latest release of all projects related to the target machine by role and environment.")]
     public class DeployCommand : CommandBase
     {
-        [Option('n', "name", Required = false, HelpText = "The target machine name.")]
+        [Option('n', "name", Required = false, HelpText = "The target machine name. Defaults to the local machine name.")]
         public string MachineName { get; set; }
         
         protected override int Run(OctopusProxy octopus)

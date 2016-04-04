@@ -9,8 +9,33 @@ namespace Nautilus
     [Verb("install", HelpText = "Installs an Octopus tenticle on the local machine.")]
     public class InstallCommand : CommandBase
     {
+        [Option('l', "location", Required = false, HelpText = "The install directory of the Octopus Tenticle. Defaults to Program Files.")]
+        public string InstallLocation { get; set; }
+        
+        [Option('h', "home", Required = false, HelpText = "The home directory of the Octopus Tenticle. Defaults to \"C:\\Octopus\"")]
+        public string HomeLocation { get; set; }
+        
+        [Option('t', "thumbprint", Required = false, HelpText = "The Octopus Server thumbprint. Defaults to global certificate thumbprint.")]
+        public string Thumbprint { get; set; }      
+                
+        [Option('p', "port", Required = false, HelpText = "The port of the Octopus Tenticle. Defaults to 10933.")]
+        public int? Port { get; set; }
+        
         protected override int Run(OctopusProxy octopus)
-        {   
+        {            
+            var installLocation = InstallLocation ?? Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), @"Octopus Deploy\Tentacle");
+            
+            var homeLocation = HomeLocation ?? @"C:\Octopus";
+            
+            var thumbprint = Thumbprint;
+            if (thumbprint == null)
+            {
+                var certicate = octopus.GetGlobalCertificate();
+                thumbprint = certicate.Thumbprint;
+            }
+                        
+            var port = Port ?? 10933;
+            
             var systemInfo = octopus.GetSystemInfo();            
             var downloadVersion = systemInfo.Version;            
             if (Environment.Is64BitOperatingSystem)
@@ -24,50 +49,60 @@ namespace Nautilus
             using (var webClient = new WebClient())
             {
                 webClient.DownloadFile(downloadUrl, filePath);
-            }
+            }            
              
             Console.WriteLine($"Installing tentacle from {filePath}");
-            var processStartInfo = new ProcessStartInfo
+            if (RunProcess("msiexec", $"INSTALLLOCATION=\"{installLocation}\" /i \"{filePath}\" /quiet"))
+            {                      
+                Console.WriteLine("Tentacle installation completed successfully");
+                
+                Console.WriteLine("Configuring tentacle");            
+                var tentacleExe = installLocation + @"\Tentacle.exe";            
+                
+                if (RunProcess(tentacleExe, $"create-instance --instance \"Tentacle\" --config \"{homeLocation}\\Tentacle.config\" --console"))
+                if (RunProcess(tentacleExe, $"new-certificate --instance \"Tentacle\" --if-blank --console"))
+                if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --reset-trust --console"))
+                if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --home \"{homeLocation}\" --app \"{homeLocation}\\Applications\" --port \"{port}\" --console"))
+                if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --trust \"{thumbprint}\" --console"))
+                if (RunProcess("netsh", $"advfirewall firewall add rule \"name=Octopus Deploy Tentacle\" dir=in action=allow protocol=TCP localport={port}"))
+                if (RunProcess(tentacleExe, $"service --instance \"Tentacle\" --install --start --console"))
+                {
+                    Console.WriteLine("Tentacle configuration completed successfully");
+                    return 0;
+                }
+            }      
+            
+            return 1;
+        }
+        
+        private static bool RunProcess(string fileName, string arguments)
+        {
+            var startInfo = new ProcessStartInfo
             {
-                FileName = "msiexec",
-                Arguments = $"/i \"{filePath}\" /quiet",
-                UseShellExecute = true
+                FileName = fileName,
+                Arguments = arguments,
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
             };
-            using (var process = Process.Start(processStartInfo))
+            
+            using (var process = Process.Start(startInfo))
             {
-                var timeout = 120000;
+                const int timeout = 120000;
                 if (!process.WaitForExit(timeout))
                 {
-                    Console.WriteLine($"Error: Operation timed out ({timeout} milliseconds) while waiting for tentacle installation to complete");
-                    return 1;
+                    Console.WriteLine($"Error: \"{fileName} {arguments}\" operation timed out ({timeout} milliseconds)");
+                    return false;
                 }
                 
                 if (process.ExitCode != 0)
                 {                    
-                    Console.WriteLine($"Tentacle installation failed and exited with code {process.ExitCode}");
-                    return 1;
+                    Console.WriteLine($"Error: \"{fileName} {arguments}\" operation failed and exited with code {process.ExitCode}");
+                    return false;
                 }
+                
+                return true;
             }
-            
-            Console.WriteLine("Tentacle installation completed successfully");
-            
-            Console.WriteLine("Configuring tentacle");
-            
-            //todo: configure
-            
-//             cd "C:\Program Files\Octopus Deploy\Tentacle"
- 
- 
-// Tentacle.exe create-instance --instance "Tentacle" --config "C:\Octopus\Tentacle.config" --console
-// Tentacle.exe new-certificate --instance "Tentacle" --if-blank --console
-// Tentacle.exe configure --instance "Tentacle" --reset-trust --console
-// Tentacle.exe configure --instance "Tentacle" --home "C:\Octopus" --app "C:\Octopus\Applications" --port "10933" --console
-// Tentacle.exe configure --instance "Tentacle" --trust "YOUR_OCTOPUS_THUMBPRINT" --console
-// "netsh" advfirewall firewall add rule "name=Octopus Deploy Tentacle" dir=in action=allow protocol=TCP localport=10933
-// Tentacle.exe register-with --instance "Tentacle" --server "http://YOUR_OCTOPUS" --apiKey="API-YOUR_API_KEY" --role "web-server" --environment "Staging" --comms-style TentaclePassive --console
-// Tentacle.exe service --instance "Tentacle" --install --start --console
-            
-            return 0;
         }
     }
 }
