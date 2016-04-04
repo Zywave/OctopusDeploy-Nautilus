@@ -17,47 +17,47 @@ namespace Nautilus
             var machine = octopus.GetMachine(machineName);
             if (machine == null)
             {
-                Console.WriteLine($"Error: The target machine ({machineName}) is not registered with Octopus ({OctopusServerAddress})");
+                WriteLine($"Error: The target machine ({machineName}) is not registered with Octopus ({OctopusServerAddress})");
                 return 1;
             }
             
             var tentacleVersionDetails = (machine.Endpoint as ListeningTentacleEndpointResource)?.TentacleVersionDetails;            
             if (tentacleVersionDetails != null && !tentacleVersionDetails.UpgradeLocked && (tentacleVersionDetails.UpgradeSuggested || tentacleVersionDetails.UpgradeRequired))
             {
-                Console.WriteLine("Updating Tentacle on target machine");
+                Write("Updating Tentacle on target machine... ");
                 var task = octopus.ExecuteTentacleUpgrade(machine.Id);
                 if (task.FinishedSuccessfully) 
                 {
-                    Console.WriteLine("Tentacle update completed successfully");
+                    WriteLine("succeeded", ConsoleColor.Green);
                 }
                 else
                 {
-                    Console.WriteLine(task.ErrorMessage);
-                    Console.WriteLine("Tentacle update failed");
+                    WriteLine("failed", ConsoleColor.Red);
+                    WriteLine(task.ErrorMessage);
                 }
             }
             else 
             {
-                Console.WriteLine("Tentacle is up to date");
+                WriteLine("Tentacle is up to date");
             }
             
             if (!machine.HasLatestCalamari)
             {
-                Console.WriteLine("Updating Calamari on target machine");
+                Write("Updating Calamari on target machine... ");
                 var task = octopus.ExecuteCalamariUpdate(machine.Id);
                 if (task.FinishedSuccessfully) 
                 {
-                    Console.WriteLine("Calamari update completed successfully");
+                    WriteLine("succeeded", ConsoleColor.Green);
                 }
                 else
                 {
-                    Console.WriteLine(task.ErrorMessage);
-                    Console.WriteLine("Calamari update failed");
+                    WriteLine("failed", ConsoleColor.Red);
+                    WriteLine(task.ErrorMessage);
                 }
             }
             else 
             {
-                Console.WriteLine("Calamari is up to date");
+                WriteLine("Calamari is up to date");
             }
             
             return 0;

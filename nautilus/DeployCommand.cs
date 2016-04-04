@@ -12,24 +12,25 @@ namespace Nautilus
         [Option('n', "name", Required = false, HelpText = "The target machine name. Defaults to the local machine name.")]
         public string MachineName { get; set; }
         
+        [Option('w', "wait", Required = false, HelpText = "Specifies whether to wait for each deployment to complete before exiting.")]
+        public bool Wait { get; set; }
+        
         protected override int Run(OctopusProxy octopus)
         {                
             var machineName = MachineName ?? Environment.MachineName;
-            
-            Console.WriteLine($"Preparing to deploy to target machine ({machineName})");
-            
+                        
             var machine = octopus.GetMachine(machineName);
             if (machine == null)
             {
-                Console.WriteLine($"Error: The target machine ({machineName}) is not registered with Octopus ({OctopusServerAddress})");
+                WriteLine($"Error: The target machine ({machineName}) is not registered with Octopus ({OctopusServerAddress})");
                 return 1;
             }
             
-            Console.WriteLine($"{machine.Id} {machine.Name} {String.Join(",", machine.Roles)} {String.Join(",", machine.EnvironmentIds)}");
+            WriteLine($"Target machine: {machine.Id} {machine.Name} {String.Join(",", machine.Roles)} {String.Join(",", machine.EnvironmentIds)}");
             
-            Console.WriteLine($"Finding projects with the target roles ({String.Join(",", machine.Roles)})");
+            WriteLine($"Finding projects with the target roles ({String.Join(",", machine.Roles)})...");
             
-            var projectIds = new List<string>();            
+            var matchedProjects = new Dictionary<string, ProjectResource>();            
             var projects = octopus.GetProjects();
             foreach(var project in projects) 
             {
@@ -37,27 +38,38 @@ namespace Nautilus
                 
                 if (HasAnyRole(deploymentProcess, machine.Roles))
                 {
-                    projectIds.Add(project.Id);
-                    Console.WriteLine($"{project.Id} {project.Name}");
+                    matchedProjects[project.Id] = project;
+                    WriteLine($" {project.Id} {project.Name}");
                 }
             }
             
-            if (!projectIds.Any())
+            if (!matchedProjects.Any())
             {
-                Console.WriteLine("No projects found");
+                WriteLine(" No projects found");
                 return 0;
             }
             
-            var dashboard = octopus.GetDynamicDashboard(projectIds, machine.EnvironmentIds);
+            var dashboard = octopus.GetDynamicDashboard(matchedProjects.Keys, machine.EnvironmentIds);
             
-            Console.WriteLine($"Creating deployments for target environments ({String.Join(",", machine.EnvironmentIds)})");
+            WriteLine($"Creating deployments for target environments ({String.Join(",", machine.EnvironmentIds)})...");
             
             foreach(var item in dashboard.Items)
             {
                 if (item.ReleaseId != null)
                 {
+                    var project = matchedProjects[item.ProjectId];
                     var deployment = octopus.CreateDeployment(machine.Id, item.ReleaseId, item.EnvironmentId, $"Nautilus: {machine.Id}");
-                    Console.WriteLine($"{deployment.Id} {item.ReleaseVersion} {item.EnvironmentId}");
+                    Write($" {deployment.Id} {project.Name} {item.ReleaseVersion} {item.EnvironmentId}");
+                    if (Wait) 
+                    {
+                        Write($"... ");
+                        var task = octopus.WaitForTaskCompletion(deployment.TaskId);
+                        WriteLine(task.FinishedSuccessfully ? "succeeded" : "failed", task.FinishedSuccessfully ? ConsoleColor.Green : ConsoleColor.Red);                        
+                    }
+                    else
+                    {
+                        WriteLine();
+                    }
                 }
             }
             

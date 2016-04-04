@@ -43,13 +43,13 @@ namespace Nautilus
             var machine = octopus.GetMachine(machineName);
             if (machine != null)
             {
-                Console.WriteLine($"The machine ({machineName}) is already registered with Octopus ({OctopusServerAddress})");
+                WriteLine($"The machine ({machineName}) is already registered with Octopus ({OctopusServerAddress})");
                 return 0;
             }
             
             machine = octopus.CreateMachine(machineName, thumbprint, hostName, port, Environments, Roles);
             
-            Console.WriteLine($"The machine ({machine.Name}) was registered successfully");
+            WriteLine($"The machine ({machine.Name}) was registered successfully");
             
             return 0;
         }

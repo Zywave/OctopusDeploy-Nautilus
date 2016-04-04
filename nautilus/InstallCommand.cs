@@ -45,18 +45,19 @@ namespace Nautilus
             var downloadUrl = $"http://download.octopusdeploy.com/octopus/Octopus.Tentacle.{downloadVersion}.msi";            
             var filePath = $"{Path.GetTempPath()}Octopus.Tentacle.{downloadVersion}.msi";
             
-            Console.WriteLine($"Downloading installer from {downloadUrl} to {filePath}");
+            Write($"Downloading installer from {downloadUrl} to {filePath}... ");
             using (var webClient = new WebClient())
             {
                 webClient.DownloadFile(downloadUrl, filePath);
-            }            
+            }
+            WriteLine("done");       
              
-            Console.WriteLine($"Installing tentacle from {filePath}");
+            Write($"Installing tentacle from {filePath}... ");
             if (RunProcess("msiexec", $"INSTALLLOCATION=\"{installLocation}\" /i \"{filePath}\" /quiet"))
             {                      
-                Console.WriteLine("Tentacle installation completed successfully");
+                WriteLine("done");
                 
-                Console.WriteLine("Configuring tentacle");            
+                Write("Configuring tentacle... ");            
                 var tentacleExe = installLocation + @"\Tentacle.exe";            
                 
                 if (RunProcess(tentacleExe, $"create-instance --instance \"Tentacle\" --config \"{homeLocation}\\Tentacle.config\" --console"))
@@ -67,7 +68,7 @@ namespace Nautilus
                 if (RunProcess("netsh", $"advfirewall firewall add rule \"name=Octopus Deploy Tentacle\" dir=in action=allow protocol=TCP localport={port}"))
                 if (RunProcess(tentacleExe, $"service --instance \"Tentacle\" --install --start --console"))
                 {
-                    Console.WriteLine("Tentacle configuration completed successfully");
+                    WriteLine("done");
                     return 0;
                 }
             }      
@@ -91,13 +92,15 @@ namespace Nautilus
                 const int timeout = 120000;
                 if (!process.WaitForExit(timeout))
                 {
-                    Console.WriteLine($"Error: \"{fileName} {arguments}\" operation timed out ({timeout} milliseconds)");
+                    WriteLine("failed", ConsoleColor.Red);
+                    WriteLine($"Error: \"{fileName} {arguments}\" operation timed out ({timeout} milliseconds)");
                     return false;
                 }
                 
                 if (process.ExitCode != 0)
                 {                    
-                    Console.WriteLine($"Error: \"{fileName} {arguments}\" operation failed and exited with code {process.ExitCode}");
+                    WriteLine("failed", ConsoleColor.Red);
+                    WriteLine($"Error: \"{fileName} {arguments}\" operation failed and exited with code {process.ExitCode}");
                     return false;
                 }
                 

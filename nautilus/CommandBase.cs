@@ -1,4 +1,5 @@
-﻿using CommandLine;
+﻿using System;
+using CommandLine;
 
 namespace Nautilus
 {
@@ -17,5 +18,30 @@ namespace Nautilus
         }
         
         protected abstract int Run(OctopusProxy octopus);
-    }
+        
+        protected static void Write(string value, ConsoleColor? color = null)
+        {
+            Write(value, color, Console.Write);
+        }
+        
+        protected static void WriteLine(string value = null, ConsoleColor? color = null)
+        {
+            Write(value, color, Console.WriteLine);
+        }
+        
+        private static void Write(string value, ConsoleColor? color, Action<string> write)
+        {
+            if (color.HasValue)
+            {
+                var oldColor = Console.ForegroundColor;
+                Console.ForegroundColor = color.Value;
+                write(value);
+                Console.ForegroundColor = oldColor;
+            }
+            else
+            {
+                write(value);
+            }
+        }
+    }    
 }

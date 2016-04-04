@@ -88,7 +88,9 @@ namespace Nautilus
                 Comments = comment
             };
             
-            return _repository.Deployments.Create(deploymentResource);
+            var deployment = _repository.Deployments.Create(deploymentResource);
+            
+            return deployment;
         }
         
         public TaskResource ExecuteTentacleUpgrade(string machineId)
@@ -101,6 +103,13 @@ namespace Nautilus
         public TaskResource ExecuteCalamariUpdate(string machineId)
         {
             var task = _repository.Tasks.ExecuteCalamariUpdate(null, new[] { machineId });
+            _repository.Tasks.WaitForCompletion(task);
+            return task;
+        }
+        
+        public TaskResource WaitForTaskCompletion(string taskId)
+        {
+            var task = _repository.Tasks.Get(taskId);
             _repository.Tasks.WaitForCompletion(task);
             return task;
         }
