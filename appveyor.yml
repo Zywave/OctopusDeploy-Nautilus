@@ -1,5 +1,4 @@
 version: '{build}'
-os: Visual Studio 2015
 cache: C:\Users\appveyor\.dnx\packages
 build_script:
 - ps: >-
@@ -12,8 +11,23 @@ build_script:
     $rnc = [IO.File]::ReadAllText($rnp)
 
     Set-AppveyorBuildVariable -Name release_notes -Value $rnc
-before_deploy:
-- ps: >-
+
     nuget pack Nautilus.nuspec -NoPackageAnalysis
 
     Get-ChildItem .\Nautilus.*.nupkg | % { Push-AppveyorArtifact $_.FullName -DeploymentName Chocolatey }
+test: off
+deploy:
+- provider: GitHub
+  description: $(release_notes)
+  auth_token:
+    secure: ajroRFK4yrBdtuy7wNRKY5evo9TCGzz0wRzeemVUMHYXQ61AU/6c37A+3hZw/vc2
+  prerelease: true
+  on:
+    appveyor_repo_tag: true
+- provider: NuGet
+  server: https://chocolatey.org/
+  api_key:
+    secure: wCneazo7/uf7Y9f4rDIFQ8z33kEWQGS/gcxPhQlB1X7mudqlLTGp5xeWCly3zZ4G
+  artifact: Chocolatey
+  on:
+    appveyor_repo_tag: true
