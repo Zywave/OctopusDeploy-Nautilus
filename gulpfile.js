@@ -56,13 +56,11 @@ gulp.task('releasenotes', function () {
 
 gulp.task('update-nuspec', function () {
     var version = getVersion(true);
-    var releaseNotes = fs.readFileSync('RELEASENOTES.md', 'utf8');
 
     return gulp.src('Nautilus.nuspec')
         .pipe(xmlpoke({
             replacements: [
-                { xpath: '/package/metadata/version', value: version },
-                { xpath: '/package/metadata/releaseNotes', value: releaseNotes },
+                { xpath: '/package/metadata/version', value: version }
             ]
         }))
         .pipe(gulp.dest('./'));
