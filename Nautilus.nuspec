@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>nautilus</id>
+	<title>Nautilus</title>
+    <version>1.0.0</version>
+    <authors>cruikshj</authors>
+    <description>A command line application for automating horizontal scaling operations in conjunction with Octopus Deploy.</description>
+    <projectUrl>https://github.com/Zywave/OctopusDeploy-Nautilus</projectUrl>
+  </metadata>
+  <files>
+  	<file src="nautilus/bin/Release/dnx451/win7-x64/*.*" target="" />
+  </files>
+</package>

@@ -1,0 +1,19 @@
+version: '{build}'
+os: Visual Studio 2015
+cache: C:\Users\appveyor\.dnx\packages
+build_script:
+- ps: >-
+    dotnet restore
+
+    dotnet build nautilus --configuration Release
+
+    $rnp = Resolve-Path(".\RELEASENOTES.md")
+
+    $rnc = [IO.File]::ReadAllText($rnp)
+
+    Set-AppveyorBuildVariable -Name release_notes -Value $rnc
+before_deploy:
+- ps: >-
+    nuget pack Nautilus.nuspec -NoPackageAnalysis
+
+    Get-ChildItem .\Nautilus.*.nupkg | % { Push-AppveyorArtifact $_.FullName -DeploymentName Chocolatey }
