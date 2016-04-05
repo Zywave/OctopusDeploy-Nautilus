@@ -7,8 +7,11 @@ Nautilus is a command line tool that helps to automate [Octopus](https://octopus
 ### Deploy
 Creates deployments for the latest release of all projects related to the target machine by role and environment.
 
-##### Arguments
-|Name|Description|
+```
+nautilus deploy -s https://<your-octopus-server>/ -k <your-octopus-api-key> -w
+```
+
+|Argument|Description|
 |---|---|
 |-s, --server|Required. Octopus server address (e.g. http://your-octopus-server/).|
 |-k, --apikey|Required. Octopus API key.|
@@ -18,7 +21,10 @@ Creates deployments for the latest release of all projects related to the target
 ### Install
 Installs and configures an Octopus Tenticle on the local machine.
 
-##### Arguments
+```
+nautilus install -s https://<your-octopus-server>/ -k <your-octopus-api-key>
+```
+
 |Name|Description|
 |---|---|
 |-s, --server|Required. Octopus server address (e.g. http://your-octopus-server/).|
@@ -31,7 +37,10 @@ Installs and configures an Octopus Tenticle on the local machine.
 ### Update
 Updates the Octopus Tenticle on the target machine.
 
-##### Arguments
+```
+nautilus update -s https://<your-octopus-server>/ -k <your-octopus-api-key>
+```
+
 |Name|Description|
 |---|---|
 |-s, --server|Required. Octopus server address (e.g. http://your-octopus-server/).|
@@ -41,13 +50,16 @@ Updates the Octopus Tenticle on the target machine.
 ### Register
 Registers the local machine with the Octopus server.
 
-##### Arguments
+```
+nautilus register -s https://<your-octopus-server>/ -k <your-octopus-api-key> -e PROD -r app
+```
+
 |Name|Description|
 |---|---|
 |-s, --server|Required. Octopus server address (e.g. http://your-octopus-server/).|
 |-k, --apikey|Required. Octopus API key.|
-|-e, --environments|Required. The environment names of the machine.|
-|-r, --roles|Required. The roles of the machine.|
+|-e, --environments|Required. The environment names (space separated) of the machine.|
+|-r, --roles|Required. The roles  (space separated) of the machine.|
 |-n, --name|The machine name. Defaults to the local machine name.|
 |-t, --thumbprint|The Octopus Tentacle thumbprint. Defaults to the local Tentacle thumbprint.|
 |-h, --host|The Tentacle host name. Defaults to the local machine name.|
@@ -56,7 +68,10 @@ Registers the local machine with the Octopus server.
 ### Unregister
 Unregisters the local machine from the Octopus server.
 
-##### Arguments
+```
+nautilus unregister -s https://<your-octopus-server>/ -k <your-octopus-api-key>
+```
+
 |Name|Description|
 |---|---|
 |-s, --server|Required. Octopus server address (e.g. http://your-octopus-server/).|
