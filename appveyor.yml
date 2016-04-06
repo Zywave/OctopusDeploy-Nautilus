@@ -1,6 +1,9 @@
 version: '{build}'
 init:
-- cmd: choco install dotnetcore --version 1.0.0.001598 --yes
+- cmd: >-
+    choco install dotnetcore --version 1.0.0.001598 --yes
+
+    setx path "%path%;C:\Program Files\dotnet\bin"
 install:
 - cmd: dotnet restore
 cache: C:\Users\appveyor\.dnx\packages
