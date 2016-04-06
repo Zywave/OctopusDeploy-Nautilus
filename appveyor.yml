@@ -2,9 +2,9 @@ version: '{build}'
 cache: C:\Users\appveyor\.dnx\packages
 build_script:
 - ps: >-
-    dotnet restore
+    dnu restore
 
-    dotnet build nautilus --configuration Release
+    dnu build nautilus --configuration Release
 
     $rnp = Resolve-Path(".\RELEASENOTES.md")
 
