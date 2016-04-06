@@ -1,5 +1,6 @@
 bin
 obj
 .vscode
+node_modules
 
 project.lock.json

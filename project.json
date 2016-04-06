@@ -1,0 +1,15 @@
+{
+    "version": "1.0.0-prerelease.1",
+    "compilationOptions": {
+        "emitEntryPoint": true
+    },
+    "dependencies": {
+        "CommandLineParser": "2.0.275-beta",
+        "Octopus.Client": "3.3.4"
+    },
+    "frameworks": {
+        "dnx451": {
+            "dependencies": {}
+        }
+    }
+}
