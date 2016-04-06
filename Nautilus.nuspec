@@ -8,8 +8,7 @@
     <summary>A command line application for automating horizontal scaling operations in conjunction with Octopus Deploy.</summary>
     <description>Nautilus is a command line tool that helps to automate Octopus deploys during horizontal scaling operations by determining all of the releases to deploy by the machine's role and environment. It is also capable of downloading, installing, configuring, updating and registering the Octopus Tentacle.</description>
     <tags>Octopus Deploy Scaling</tags>
-    <projectUrl>https://github.com/Zywave/OctopusDeploy-Nautilus</projectUrl>    
-    <packageSourceUrl>https://github.com/Zywave/OctopusDeploy-Nautilus.git</packageSourceUrl>
+    <projectUrl>https://github.com/Zywave/OctopusDeploy-Nautilus</projectUrl>
     <licenseUrl>https://github.com/Zywave/OctopusDeploy-Nautilus/blob/master/LICENSE</licenseUrl>
     <releaseNotes>https://github.com/Zywave/OctopusDeploy-Nautilus/blob/master/RELEASENOTES.md</releaseNotes>
   </metadata>
