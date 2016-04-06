@@ -1,6 +1,6 @@
 {
   "name": "OctopusDeploy-Nautilus",
-  "version": "1.0.0-prelease.1",
+  "version": "1.0.0-prerelease.0",
   "private": true,
   "repository": {
     "type": "git",
