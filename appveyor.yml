@@ -1,10 +1,15 @@
 version: '{build}'
-cache: C:\Users\appveyor\.dnx\packages
+init:
+- cmd: >-
+    choco install dotnetcore --version 1.0.0.001598 --yes
+
+    set path=%path%;C:\Program Files\dotnet\bin
+install:
+- cmd: dotnet restore
+cache: C:\Users\appveyor\.nuget\packages
 build_script:
 - ps: >-
-    dnu restore
-
-    dnu build nautilus --configuration Release
+    dotnet build nautilus --configuration Release
 
     $rnp = Resolve-Path(".\RELEASENOTES.md")
 
@@ -15,7 +20,6 @@ build_script:
     nuget pack Nautilus.nuspec -NoPackageAnalysis
 
     Get-ChildItem .\Nautilus.*.nupkg | % { Push-AppveyorArtifact $_.FullName -DeploymentName Chocolatey }
-test: off
 deploy:
 - provider: GitHub
   description: $(release_notes)

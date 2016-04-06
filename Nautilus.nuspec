@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?><package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>nautilus</id>
-	<title>OctopusDeploy Nautilus</title>
-    <version>1.0.0</version>
+    <title>OctopusDeploy-Nautilus</title>
+    <version>1.0.0-prerelease00</version>
     <authors>cruikshj</authors>
     <summary>A command line application for automating horizontal scaling operations in conjunction with Octopus Deploy.</summary>
     <description>Nautilus is a command line tool that helps to automate Octopus deploys during horizontal scaling operations by determining all of the releases to deploy by the machine's role and environment. It is also capable of downloading, installing, configuring, updating and registering the Octopus Tentacle.</description>
@@ -12,6 +12,6 @@
     <releaseNotes>https://github.com/Zywave/OctopusDeploy-Nautilus/blob/master/RELEASENOTES.md</releaseNotes>
   </metadata>
   <files>
-  	<file src="nautilus/bin/Release/dnx451/win7-x64/*.*" target=""/>
+    <file src="nautilus\bin\Release\dnx451\win7-x64\*.*" target="" />
   </files>
 </package>

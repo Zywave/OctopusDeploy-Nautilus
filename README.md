@@ -1,5 +1,7 @@
 # OctopusDeploy-Nautilus
 
+[![Build status](https://ci.appveyor.com/api/projects/status/77fdul0exe7gjpg1?svg=true)](https://ci.appveyor.com/project/JohnCruikshank/octopusdeploy-nautilus-jl4x8)
+
 Nautilus is a command line tool that helps to automate [Octopus](https://octopus.com/) deploys during horizontal scaling operations by determining all of the releases to deploy by the machine's role and environment.  It is also capable of downloading, installing, configuring, updating and registering the Octopus Tentacle.
 
 ## Commands
