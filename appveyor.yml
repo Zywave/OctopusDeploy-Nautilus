@@ -1,10 +1,12 @@
 version: '{build}'
+init:
+- cmd: choco install dotnetcore --version 1.0.0.001598 --yes
+install:
+- cmd: dotnet restore
 cache: C:\Users\appveyor\.dnx\packages
 build_script:
 - ps: >-
-    dnu restore
-
-    dnu build nautilus --configuration Release
+    dotnet build nautilus --configuration Release
 
     $rnp = Resolve-Path(".\RELEASENOTES.md")
 
