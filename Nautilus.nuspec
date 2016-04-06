@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>nautilus</id>
-	<title>OctopusDeploy Nautilus</title>
+    <title>OctopusDeploy-Nautilus</title>
     <version>1.0.0-prerelease00</version>
     <authors>cruikshj</authors>
     <summary>A command line application for automating horizontal scaling operations in conjunction with Octopus Deploy.</summary>
