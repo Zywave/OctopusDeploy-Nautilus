@@ -1,3 +1,3 @@
 ### Bug Fixes
 
-* Fixing incorrect release version
+* Fixing incorrect exe version
