@@ -1,6 +1,11 @@
 <a name="1.0.0-prerelease.2"></a>
 # [1.0.0-prerelease.2](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.0-prerelease.0...v1.0.0-prerelease.2) (2016-04-06)
 
+
+### Bug Fixes
+
+* Fixing incorrect exe version
+
 <a name="1.0.0-prerelease.1"></a>
 # 1.0.0-prerelease.1 (2016-04-06)
 
