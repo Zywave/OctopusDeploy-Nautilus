@@ -10,6 +10,7 @@ var trim = require('gulp-trim');
 var xmlpoke = require('gulp-xmlpoke');
 var git = require('gulp-git');
 var fs = require('fs');
+var es = require('event-stream');
 
 function getVersion(nuget) {
     var version = JSON.parse(fs.readFileSync('./package.json', 'utf8')).version;
@@ -35,9 +36,15 @@ gulp.task('bump-version', function () {
         }
     }
 
-    return gulp.src(['./package.json', './nautilus/project.json'])
+    var packageBump = gulp.src(['./package.json'])
       .pipe(bump({ type: type, preid: 'prerelease' }).on('error', gutil.log))
       .pipe(gulp.dest('./'));
+	  
+	var projectBump = gulp.src(['./nautilus/project.json'])
+      .pipe(bump({ type: type, preid: 'prerelease' }).on('error', gutil.log))
+      .pipe(gulp.dest('./nautilus/'));
+	  
+	return es.merge(packageBump, projectBump);
 });
 
 gulp.task('changelog', function () {

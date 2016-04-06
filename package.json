@@ -1,12 +1,13 @@
 {
   "name": "OctopusDeploy-Nautilus",
-  "version": "1.0.0-prerelease.1",
+  "version": "1.0.0-prelease.1",
   "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/zywave/OctopusDeploy-Nautilus.git"
   },
   "devDependencies": {
+    "event-stream": "^3.3.2",
     "fs": "0.0.2",
     "gulp": "^3.9.1",
     "gulp-bump": "^1.0.0",
