@@ -102,6 +102,7 @@ namespace Nautilus
         {            
             var task = _repository.Tasks.ExecuteTentacleUpgrade(null, null, new[] { machineId });
             _repository.Tasks.WaitForCompletion(task);
+            task = _repository.Tasks.Get(task.Id);
             return task;
         }
         
@@ -109,6 +110,7 @@ namespace Nautilus
         {
             var task = _repository.Tasks.ExecuteCalamariUpdate(null, new[] { machineId });
             _repository.Tasks.WaitForCompletion(task);
+            task = _repository.Tasks.Get(task.Id);
             return task;
         }
         
@@ -116,6 +118,7 @@ namespace Nautilus
         {
             var task = _repository.Tasks.Get(taskId);
             _repository.Tasks.WaitForCompletion(task);
+            task = _repository.Tasks.Get(taskId);
             return task;
         }
 
