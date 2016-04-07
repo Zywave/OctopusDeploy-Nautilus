@@ -6,19 +6,19 @@ using CommandLine;
 
 namespace Nautilus
 {    
-    [Verb("install", HelpText = "Installs an Octopus Tenticle on the local machine.")]
+    [Verb("install", HelpText = "Installs an Octopus Tentacle on the local machine.")]
     public class InstallCommand : CommandBase
     {
-        [Option('l', "location", Required = false, HelpText = "The install directory of the Octopus Tenticle. Defaults to Program Files.")]
+        [Option('l', "location", Required = false, HelpText = "The install directory of the Octopus Tentacle. Defaults to Program Files.")]
         public string InstallLocation { get; set; }
         
-        [Option('h', "home", Required = false, HelpText = "The home directory of the Octopus Tenticle. Defaults to \"C:\\Octopus\"")]
+        [Option('h', "home", Required = false, HelpText = "The home directory of the Octopus Tentacle. Defaults to \"C:\\Octopus\"")]
         public string HomeLocation { get; set; }
         
         [Option('t', "thumbprint", Required = false, HelpText = "The Octopus Server thumbprint. Defaults to global certificate thumbprint.")]
         public string Thumbprint { get; set; }      
                 
-        [Option('p', "port", Required = false, HelpText = "The port of the Octopus Tenticle. Defaults to 10933.")]
+        [Option('p', "port", Required = false, HelpText = "The port of the Octopus Tentacle. Defaults to 10933.")]
         public int? Port { get; set; }
         
         protected override int Run(OctopusProxy octopus)

@@ -4,7 +4,7 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Nautilus
 {
-    [Verb("update", HelpText = "Updates the Octopus Tenticle on the target machine.")]
+    [Verb("update", HelpText = "Updates the Octopus Tentacle on the target machine.")]
     public class UpdateCommand : CommandBase
     {
         [Option('n', "name", Required = false, HelpText = "The target machine name. Defaults to the local machine name.")]
