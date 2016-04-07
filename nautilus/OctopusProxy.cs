@@ -33,6 +33,11 @@ namespace Nautilus
             return _repository.Machines.FindByName(name);
         }
         
+        public IEnumerable<MachineResource> GetMachines(string role)
+        {
+            return _repository.Machines.FindMany(m => m.Roles.Contains(role));
+        }
+                
         public MachineResource CreateMachine(string name, string thumbprint, string hostname, int port, IEnumerable<string> environmentNames, IEnumerable<string> roles)
         {
             var machine = new MachineResource();
