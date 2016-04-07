@@ -23,7 +23,7 @@ nautilus deploy -s https://<your-octopus-server>/ -k <your-octopus-api-key> -w
 |-w, --wait|Specifies whether to wait for each deployment to complete before exiting.|
 
 ### Install
-Installs and configures an Octopus Tenticle on the local machine.
+Installs and configures an Octopus Tentacle on the local machine.
 
 ```
 nautilus install -s https://<your-octopus-server>/ -k <your-octopus-api-key>
@@ -33,13 +33,13 @@ nautilus install -s https://<your-octopus-server>/ -k <your-octopus-api-key>
 |---|---|
 |-s, --server|Required. Octopus server address (e.g. http://your-octopus-server/).|
 |-k, --apikey|Required. Octopus API key.|
-|-l, --location|The install directory of the Octopus Tenticle. Defaults to Program Files.|
-|-h, --home|The home directory of the Octopus Tenticle. Defaults to "C:\Octopus"|
+|-l, --location|The install directory of the Octopus Tentacle. Defaults to Program Files.|
+|-h, --home|The home directory of the Octopus Tentacle. Defaults to "C:\Octopus"|
 | -t, --thumbprint|The Octopus Server thumbprint. Defaults to global certificate thumbprint.|
-|-p, --port|The port of the Octopus Tenticle. Defaults to 10933.|
+|-p, --port|The port of the Octopus Tentacle. Defaults to 10933.|
 
 ### Update
-Updates the Octopus Tenticle on the target machine.
+Updates the Octopus Tentacle on the target machine.
 
 ```
 nautilus update -s https://<your-octopus-server>/ -k <your-octopus-api-key>
