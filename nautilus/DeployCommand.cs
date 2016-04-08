@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using CommandLine;
 using Octopus.Client.Model;
 
@@ -15,6 +16,9 @@ namespace Nautilus
         [Option('w', "wait", Required = false, HelpText = "Specifies whether to wait for each deployment to complete before exiting.")]
         public bool Wait { get; set; }
         
+        [Option('f', "force", Required = false, HelpText = "Specifies whether to force redeployment of releases to this machine.")]
+        public bool Force { get; set; }
+        
         protected override int Run(OctopusProxy octopus)
         {                
             var machineName = MachineName ?? Environment.MachineName;
@@ -25,6 +29,8 @@ namespace Nautilus
                 WriteLine($"Error: The target machine ({machineName}) is not registered with Octopus ({OctopusServerAddress})");
                 return 1;
             }
+            
+            var successExpression = new Regex($"Success: {machine.Name}{Environment.NewLine}");
             
             var environments = octopus.GetEnvironments().ToDictionary(i => i.Id);
             
@@ -60,18 +66,33 @@ namespace Nautilus
                 if (item.ReleaseId != null)
                 {
                     var project = matchedProjects[item.ProjectId];
+                                      
+                    Write($" {project.Name} {item.ReleaseVersion} -> {GetEnvironmentName(item.EnvironmentId, environments)}... ");
+                   
+                    if (!Force)
+                    {
+                        var releaseTask = octopus.GetTask(item.TaskId);
+                        if (releaseTask.FinishedSuccessfully)
+                        {
+                            var rawOuput = octopus.GetTaskRawOutputLog(releaseTask);
+                            if (successExpression.IsMatch(rawOuput))
+                            {
+                                WriteLine("already deployed");
+                                continue;
+                            }
+                        }
+                    }
+                    
                     var deployment = octopus.CreateDeployment(machine.Id, item.ReleaseId, item.EnvironmentId, $"Nautilus: {machine.Id}");
-                    Write($" {deployment.Id} {project.Name} {item.ReleaseVersion} -> {GetEnvironmentName(item.EnvironmentId, environments)}");
+                    
                     if (Wait) 
                     {
-                        Write($"... ");
                         var task = octopus.WaitForTaskCompletion(deployment.TaskId);
-                        WriteLine(task.FinishedSuccessfully ? "succeeded" : "failed", task.FinishedSuccessfully ? ConsoleColor.Green : ConsoleColor.Red);                        
+                        WriteLine(task.FinishedSuccessfully ? "succeeded" : "failed", task.FinishedSuccessfully ? ConsoleColor.Green : ConsoleColor.Red);
+                        continue;                        
                     }
-                    else
-                    {
-                        WriteLine();
-                    }
+                        
+                    WriteLine("created");
                 }
             }
             

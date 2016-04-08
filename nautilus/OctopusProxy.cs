@@ -126,6 +126,16 @@ namespace Nautilus
             task = _repository.Tasks.Get(taskId);
             return task;
         }
+        
+        public TaskResource GetTask(string taskId)
+        {
+            return _repository.Tasks.Get(taskId);
+        }
+        
+        public string GetTaskRawOutputLog(TaskResource task)
+        {
+            return _repository.Tasks.GetRawOutputLog(task);
+        }
 
         private IOctopusRepository _repository;
     }
