@@ -26,6 +26,8 @@ nautilus deploy -s https://<your-octopus-server>/ -k <your-octopus-api-key> -w
 ### Install
 Installs and configures an Octopus Tentacle on the local machine.
 
+*Local machine only*
+
 ```
 nautilus install -s https://<your-octopus-server>/ -k <your-octopus-api-key>
 ```
@@ -53,7 +55,8 @@ nautilus update -s https://<your-octopus-server>/ -k <your-octopus-api-key>
 |-n, --name|The target machine name. Defaults to the local machine name.|
 
 ### Register
-Registers the local machine with the Octopus server.
+Registers the target machine with the Octopus server.
+
 
 ```
 nautilus register -s https://<your-octopus-server>/ -k <your-octopus-api-key> -e PROD -r app
@@ -71,7 +74,7 @@ nautilus register -s https://<your-octopus-server>/ -k <your-octopus-api-key> -e
 |-p, --port|The Tentacle port. Defaults to 10933.|
 
 ### Unregister
-Unregisters the local machine from the Octopus server.
+Unregisters the target machine from the Octopus server.
 
 ```
 nautilus unregister -s https://<your-octopus-server>/ -k <your-octopus-api-key>
