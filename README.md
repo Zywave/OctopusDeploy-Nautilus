@@ -21,6 +21,7 @@ nautilus deploy -s https://<your-octopus-server>/ -k <your-octopus-api-key> -w
 |-k, --apikey|Required. Octopus API key.|
 |-n, --name|The target machine name. Defaults to the local machine name.|
 |-w, --wait|Specifies whether to wait for each deployment to complete before exiting.|
+|-f, --force|Specifies whether to force redeployment of releases to this machine.|
 
 ### Install
 Installs and configures an Octopus Tentacle on the local machine.
@@ -81,3 +82,16 @@ nautilus unregister -s https://<your-octopus-server>/ -k <your-octopus-api-key>
 |-s, --server|Required. Octopus server address (e.g. http://your-octopus-server/).|
 |-k, --apikey|Required. Octopus API key.|
 |-n, --name|The machine name. Defaults to the local machine name.|
+
+### Purge
+Unregisters offline machines in a specified role.
+
+```
+nautilus purge -s https://<your-octopus-server>/ -k <your-octopus-api-key> -r app
+```
+
+|Name|Description|
+|---|---|
+|-s, --server|Required. Octopus server address (e.g. http://your-octopus-server/).|
+|-k, --apikey|Required. Octopus API key.|
+|-r, --role|The machine role for which to purge offline nodes.|
