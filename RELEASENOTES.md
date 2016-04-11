@@ -1,3 +1,3 @@
-### Features
+### Bug Fixes
 
-* inject dependencies into exe using LibZ ([a3302e0](https://github.com/zywave/OctopusDeploy-Nautilus/commit/a3302e0)), closes [#1](https://github.com/zywave/OctopusDeploy-Nautilus/issues/1)
+* run tentacle.exe in console mode to get thumbprint ([a7e937c](https://github.com/zywave/OctopusDeploy-Nautilus/commit/a7e937c))

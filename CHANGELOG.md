@@ -1,3 +1,13 @@
+<a name="1.0.0-prerelease.5"></a>
+# [1.0.0-prerelease.5](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.0-prerelease.4...v1.0.0-prerelease.5) (2016-04-11)
+
+
+### Bug Fixes
+
+* run tentacle.exe in console mode to get thumbprint ([a7e937c](https://github.com/zywave/OctopusDeploy-Nautilus/commit/a7e937c))
+
+
+
 <a name="1.0.0-prerelease.4"></a>
 # [1.0.0-prerelease.4](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.0-prerelease.3...v1.0.0-prerelease.4) (2016-04-11)
 
