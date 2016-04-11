@@ -2,7 +2,7 @@
   <metadata>
     <id>nautilus</id>
     <title>OctopusDeploy-Nautilus</title>
-    <version>1.0.0-prerelease03</version>
+    <version>1.0.0-prerelease04</version>
     <authors>cruikshj</authors>
     <summary>A command line application for automating horizontal scaling operations in conjunction with Octopus Deploy.</summary>
     <description>Nautilus is a command line tool that helps to automate Octopus deploys during horizontal scaling operations by determining all of the releases to deploy by the machine's role and environment. It is also capable of downloading, installing, configuring, updating and registering the Octopus Tentacle.</description>

@@ -1,3 +1,13 @@
+<a name="1.0.0-prerelease.4"></a>
+# [1.0.0-prerelease.4](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.0-prerelease.3...v1.0.0-prerelease.4) (2016-04-11)
+
+
+### Features
+
+* inject dependencies into exe using LibZ ([a3302e0](https://github.com/zywave/OctopusDeploy-Nautilus/commit/a3302e0)), closes [#1](https://github.com/zywave/OctopusDeploy-Nautilus/issues/1)
+
+
+
 <a name="1.0.0-prerelease.3"></a>
 # [1.0.0-prerelease.3](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.0-prerelease.2...v1.0.0-prerelease.3) (2016-04-08)
 
