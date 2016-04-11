@@ -65,7 +65,7 @@ namespace Nautilus
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = Path.Combine(installLocation, "Tentacle.exe"),
-                Arguments = "show-thumbprint --nologo",
+                Arguments = "show-thumbprint --nologo --console",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
