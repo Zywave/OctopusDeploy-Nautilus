@@ -13,7 +13,7 @@ build_script:
 
     nuget install LibZ.Tool -Version 1.2.0
 
-    ".\LibZ.Tool.1.2.0.0\tools\libz.exe" inject-dll --assembly ".\nautilus\bin\Release\dnx451\win7-x64\nautilus.exe" --include ".\nautilus\bin\Release\dnx451\win7-x64\*.dll" --move
+    .\LibZ.Tool.1.2.0.0\tools\libz.exe inject-dll --assembly ".\nautilus\bin\Release\dnx451\win7-x64\nautilus.exe" --include ".\nautilus\bin\Release\dnx451\win7-x64\*.dll" --move
 
     Get-ChildItem .\nautilus\bin\Release\dnx451\win7-x64\nautilus.exe | % { Push-AppveyorArtifact $_.FullName }
 
