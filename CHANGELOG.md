@@ -1,3 +1,13 @@
+<a name="1.0.0-prerelease.7"></a>
+# [1.0.0-prerelease.7](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.0-prerelease.6...v1.0.0-prerelease.7) (2016-04-12)
+
+
+### Bug Fixes
+
+* nonce check returns 0 ([f7ddb8f](https://github.com/zywave/OctopusDeploy-Nautilus/commit/f7ddb8f))
+
+
+
 <a name="1.0.0-prerelease.6"></a>
 # [1.0.0-prerelease.6](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.0-prerelease.5...v1.0.0-prerelease.6) (2016-04-12)
 
