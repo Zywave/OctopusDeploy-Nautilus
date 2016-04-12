@@ -36,6 +36,7 @@ namespace Nautilus
             if (Nonce.HasValue && CheckAndUpdateNonces(Nonce.Value))
             {
                 WriteLine($"Preventing repeat deploy based on the specified nonce value ({Nonce.Value})");
+                return 0;
             }            
             
             var successExpression = new Regex($"Success: {machine.Name}{Environment.NewLine}");
