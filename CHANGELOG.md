@@ -1,3 +1,14 @@
+<a name="1.0.0-prerelease.6"></a>
+# [1.0.0-prerelease.6](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.0-prerelease.5...v1.0.0-prerelease.6) (2016-04-12)
+
+
+### Features
+
+* deploy nonce ([19049de](https://github.com/zywave/OctopusDeploy-Nautilus/commit/19049de))
+* detect whether tentacle is installed ([8cecefe](https://github.com/zywave/OctopusDeploy-Nautilus/commit/8cecefe))
+
+
+
 <a name="1.0.0-prerelease.5"></a>
 # [1.0.0-prerelease.5](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.0-prerelease.4...v1.0.0-prerelease.5) (2016-04-11)
 

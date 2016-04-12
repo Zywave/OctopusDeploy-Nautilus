@@ -1,3 +1,4 @@
-### Bug Fixes
+### Features
 
-* run tentacle.exe in console mode to get thumbprint ([a7e937c](https://github.com/zywave/OctopusDeploy-Nautilus/commit/a7e937c))
+* deploy nonce ([19049de](https://github.com/zywave/OctopusDeploy-Nautilus/commit/19049de))
+* detect whether tentacle is installed ([8cecefe](https://github.com/zywave/OctopusDeploy-Nautilus/commit/8cecefe))
