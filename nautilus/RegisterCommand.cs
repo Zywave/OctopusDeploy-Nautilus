@@ -38,6 +38,11 @@ namespace Nautilus
             if (thumbprint == null)
             {
                 thumbprint = GetTentacleThumbprint();
+                if (thumbprint == null)
+                {
+                    WriteLine("Error: Could not determine thumbprint. An Octopus Tentacle is not installed on this machine.");
+                    return 1;
+                }
             }
             
             var machine = octopus.GetMachine(machineName);

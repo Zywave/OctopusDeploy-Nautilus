@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using CommandLine;
+using Microsoft.Win32;
 
 namespace Nautilus
 {    
@@ -23,7 +24,14 @@ namespace Nautilus
         
         protected override int Run(OctopusProxy octopus)
         {            
-            var installLocation = InstallLocation ?? Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), @"Octopus Deploy\Tentacle");
+            var installLocation = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Octopus\Tentacle", "InstallLocation", null) as string;
+            if (installLocation != null)
+            {
+                WriteLine("Octopus Tentacle is already installed.");
+                return 0;
+            }
+            
+            installLocation = InstallLocation ?? Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), @"Octopus Deploy\Tentacle");
             
             var homeLocation = HomeLocation ?? @"C:\Octopus";
             
