@@ -22,6 +22,7 @@ nautilus deploy -s https://<your-octopus-server>/ -k <your-octopus-api-key> -w
 |-n, --name|The target machine name. Defaults to the local machine name.|
 |-w, --wait|Specifies whether to wait for each deployment to complete before exiting.|
 |-f, --force|Specifies whether to force redeployment of releases to this machine.|
+|-o, --nonce|An arbritrary value to ensure that a deploy is only run once.  If the specified value matches a value previously used, this deploy will be prevented. The value is stored in an environment variable (NAUTILUS_NONCE) on the local machine.|
 
 ### Install
 Installs and configures an Octopus Tentacle on the local machine.

@@ -19,7 +19,7 @@ namespace Nautilus
         [Option('f', "force", Required = false, HelpText = "Specifies whether to force redeployment of releases to this machine.")]
         public bool Force { get; set; }
         
-        [Option("nonce", Required = false, HelpText = "An arbritrary value to ensure that a deploy is only run once.  If the specified value matches a value previously used, this deploy will be prevented. The value is stored in an environment variable (NAUTILUS_NONCE) on the local machine.")]
+        [Option('o', "nonce", Required = false, HelpText = "An arbritrary value to ensure that a deploy is only run once.  If the specified value matches a value previously used, this deploy will be prevented. The value is stored in an environment variable (NAUTILUS_NONCE) on the local machine.")]
         public int? Nonce { get; set; }
         
         protected override int Run(OctopusProxy octopus)
