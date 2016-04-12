@@ -19,6 +19,9 @@ namespace Nautilus
         [Option('f', "force", Required = false, HelpText = "Specifies whether to force redeployment of releases to this machine.")]
         public bool Force { get; set; }
         
+        [Option("nonce", Required = false, HelpText = "An arbritrary value to ensure that a deploy is only run once.  If the specified value matches a value previously used, this deploy will be prevented. The value is stored in an environment variable (NAUTILUS_NONCE) on the local machine.")]
+        public int? Nonce { get; set; }
+        
         protected override int Run(OctopusProxy octopus)
         {                
             var machineName = MachineName ?? Environment.MachineName;
@@ -29,6 +32,11 @@ namespace Nautilus
                 WriteLine($"Error: The target machine ({machineName}) is not registered with Octopus ({OctopusServerAddress})");
                 return 1;
             }
+            
+            if (Nonce.HasValue && CheckAndUpdateNonces(Nonce.Value))
+            {
+                WriteLine($"Preventing repeat deploy based on the specified nonce value ({Nonce.Value})");
+            }            
             
             var successExpression = new Regex($"Success: {machine.Name}{Environment.NewLine}");
             
@@ -125,6 +133,33 @@ namespace Nautilus
                 return environment.Name;
             }
             return environmentId;
+        }
+        
+        private static bool CheckAndUpdateNonces(int nonce)
+        {
+            var nonces = new HashSet<int>();
+            var ev = Environment.GetEnvironmentVariable("NAUTILUS_NONCE", EnvironmentVariableTarget.Machine);
+            if (!String.IsNullOrEmpty(ev))
+            {
+                foreach (var ns in ev.Split(','))
+                {
+                    int n;
+                    if (int.TryParse(ns, out n))
+                    {
+                        nonces.Add(n);
+                    }
+                }
+            }
+            
+            if (nonces.Contains(nonce))
+            {
+                return true;
+            }            
+            
+            nonces.Add(nonce);
+            Environment.SetEnvironmentVariable("NAUTILUS_NONCE", String.Join(",", nonces), EnvironmentVariableTarget.Machine);
+            
+            return false;
         }
     }
 }
