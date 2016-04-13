@@ -16,7 +16,7 @@ namespace Nautilus
         [Option('w', "wait", Required = false, HelpText = "Specifies whether to wait for each deployment to complete before exiting.")]
         public bool Wait { get; set; }
         
-        [Option('f', "force", Required = false, HelpText = "Specifies whether to force redeployment of releases to this machine.")]
+        [Option('f', "force", Required = false, HelpText = "Specifies whether to force redeployment of releases to the target machine.")]
         public bool Force { get; set; }
         
         [Option('o', "nonce", Required = false, HelpText = "An arbritrary value to ensure that a deploy is only run once.  If the specified value matches a value previously used, this deploy will be prevented. The value is stored in an environment variable (NAUTILUS_NONCE) on the local machine.")]
