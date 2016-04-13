@@ -1,3 +1,13 @@
+<a name="1.0.0-prerelease.8"></a>
+# [1.0.0-prerelease.8](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.0-prerelease.7...v1.0.0-prerelease.8) (2016-04-13)
+
+
+### Features
+
+* registration update option ([625b011](https://github.com/zywave/OctopusDeploy-Nautilus/commit/625b011))
+
+
+
 <a name="1.0.0-prerelease.7"></a>
 # [1.0.0-prerelease.7](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.0-prerelease.6...v1.0.0-prerelease.7) (2016-04-12)
 
