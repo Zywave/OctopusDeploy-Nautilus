@@ -31,7 +31,7 @@ deploy:
   description: $(release_notes)
   auth_token:
     secure: ajroRFK4yrBdtuy7wNRKY5evo9TCGzz0wRzeemVUMHYXQ61AU/6c37A+3hZw/vc2
-  prerelease: true
+  prerelease: false
   on:
     appveyor_repo_tag: true
 - provider: NuGet
