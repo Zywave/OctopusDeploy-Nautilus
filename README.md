@@ -72,7 +72,7 @@ nautilus register -s https://<your-octopus-server>/ -k <your-octopus-api-key> -e
 |-t, --thumbprint|The Octopus Tentacle thumbprint. Defaults to the local Tentacle thumbprint.|
 |-h, --host|The Tentacle host name. Defaults to the local machine name.|
 |-p, --port|The Tentacle port. Defaults to 10933.|
-|-u, --update|The Tentacle port. Defaults to 10933.|
+|-u, --update|Specifies whether to update an existing registration.|
 
 ### Unregister
 Unregisters the target machine from the Octopus server.
