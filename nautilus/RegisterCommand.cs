@@ -28,6 +28,9 @@ namespace Nautilus
         [Option('r', "roles", Required = true, HelpText = "The roles of the machine.")]
         public IList<string> Roles { get; set; }
         
+        [Option('u', "update", Required = false, HelpText = "Specifies whether to update an existing registration.")]
+        public bool Update { get; set; }
+        
         protected override int Run(OctopusProxy octopus)
         {                                    
             var machineName = MachineName ?? Environment.MachineName;            
@@ -40,7 +43,7 @@ namespace Nautilus
                 thumbprint = GetTentacleThumbprint();
                 if (thumbprint == null)
                 {
-                    WriteLine("Error: Could not determine thumbprint. An Octopus Tentacle is not installed on this machine.");
+                    WriteLine("Error: Could not determine thumbprint because an Octopus Tentacle is not installed on this machine");
                     return 1;
                 }
             }
@@ -49,6 +52,14 @@ namespace Nautilus
             if (machine != null)
             {
                 WriteLine($"The machine ({machineName}) is already registered with Octopus ({OctopusServerAddress})");
+                
+                if (Update)
+                {
+                    machine = octopus.ModifyMachine(machine, thumbprint, hostName, port, Environments, Roles);
+                    
+                    WriteLine($"Registration updated successfully");
+                }
+                
                 return 0;
             }
             

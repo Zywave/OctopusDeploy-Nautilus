@@ -43,10 +43,10 @@ nautilus install -s https://<your-octopus-server>/ -k <your-octopus-api-key>
 |-p, --port|The port of the Octopus Tentacle. Defaults to 10933.|
 
 ### Update
-Updates the Octopus Tentacle on the target machine.
+Upgrades the Octopus Tentacle on the target machine.
 
 ```
-nautilus update -s https://<your-octopus-server>/ -k <your-octopus-api-key>
+nautilus upgrade -s https://<your-octopus-server>/ -k <your-octopus-api-key>
 ```
 
 |Name|Description|
@@ -57,7 +57,6 @@ nautilus update -s https://<your-octopus-server>/ -k <your-octopus-api-key>
 
 ### Register
 Registers the target machine with the Octopus server.
-
 
 ```
 nautilus register -s https://<your-octopus-server>/ -k <your-octopus-api-key> -e PROD -r app
@@ -73,6 +72,7 @@ nautilus register -s https://<your-octopus-server>/ -k <your-octopus-api-key> -e
 |-t, --thumbprint|The Octopus Tentacle thumbprint. Defaults to the local Tentacle thumbprint.|
 |-h, --host|The Tentacle host name. Defaults to the local machine name.|
 |-p, --port|The Tentacle port. Defaults to 10933.|
+|-u, --update|The Tentacle port. Defaults to 10933.|
 
 ### Unregister
 Unregisters the target machine from the Octopus server.

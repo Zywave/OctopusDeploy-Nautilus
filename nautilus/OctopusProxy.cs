@@ -63,6 +63,29 @@ namespace Nautilus
             return _repository.Machines.Create(machine);    
         }
         
+        public MachineResource ModifyMachine(MachineResource machine, string thumbprint, string hostname, int port, IEnumerable<string> environmentNames, IEnumerable<string> roles)
+        {            
+            machine.EnvironmentIds.Clear();    
+            var environments = _repository.Environments.FindByNames(environmentNames);
+            foreach (var environment in environments)
+            {                
+                machine.EnvironmentIds.Add(environment.Id);
+            }
+           
+            machine.Roles.Clear();
+            foreach (var role in roles)
+            {
+                machine.Roles.Add(role);
+            }
+            
+            var endpoint = new ListeningTentacleEndpointResource();
+            endpoint.Uri = $"https://{hostname}:{port}";
+            endpoint.Thumbprint = thumbprint;
+            machine.Endpoint = endpoint;
+                        
+            return _repository.Machines.Modify(machine);
+        }
+        
         public void DeleteMachine(MachineResource machine)
         {
             _repository.Machines.Delete(machine);
