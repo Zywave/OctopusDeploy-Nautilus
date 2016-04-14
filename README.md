@@ -18,11 +18,11 @@ choco install nautilus
 ##### Powershell download
 
 ```
-iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/Zywave/OctopusDeploy-Nautilus/master/download.ps1'))
+iex ((new-object net.webclient).DownloadString('http://Zywave.github.io/OctopusDeploy-Nautilus/scripts/Download.ps1'))
 ```
 
 ```
-@powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/Zywave/OctopusDeploy-Nautilus/master/download.ps1'))"
+@powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString('http://Zywave.github.io/OctopusDeploy-Nautilus/scripts/Download.ps1'))"
 ```
 
 ## Commands
