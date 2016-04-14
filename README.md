@@ -10,12 +10,12 @@ Nautilus is a command line tool that helps to automate [Octopus](https://octopus
 
 Nautilus is available via [Chocolatey](https://chocolatey.org/) or direct download from [releases](https://github.com/Zywave/OctopusDeploy-Nautilus/releases/latest).  Additionally, a a simple Powershell script that downloads the latest nautilus.exe into the current directory is available to simplify automation.
 
-##### Chocolately
+##### Chocolately install
 ```
 choco install nautilus
 ```
 
-##### Powershell
+##### Powershell download
 
 ```
 iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/Zywave/OctopusDeploy-Nautilus/master/download.ps1'))
