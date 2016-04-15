@@ -66,7 +66,9 @@ namespace Nautilus
                 WriteLine("done");
                 
                 Write("Configuring tentacle... ");            
-                var tentacleExe = installLocation + @"\Tentacle.exe";            
+                var tentacleExe = installLocation + @"\Tentacle.exe";     
+                
+                File.Delete($"{homeLocation}\\Tentacle.config");
                 
                 if (RunProcess(tentacleExe, $"create-instance --instance \"Tentacle\" --config \"{homeLocation}\\Tentacle.config\" --console"))
                 if (RunProcess(tentacleExe, $"new-certificate --instance \"Tentacle\" --if-blank --console"))
