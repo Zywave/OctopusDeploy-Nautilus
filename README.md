@@ -56,8 +56,8 @@ nautilus install -s https://<your-octopus-server>/ -k <your-octopus-api-key>
 |---|---|
 |-s, --server|Required. Octopus server address (e.g. http://your-octopus-server/).|
 |-k, --apikey|Required. Octopus API key.|
-|-l, --location|The install directory of the Octopus Tentacle. Defaults to "%PROGRAMFILES%\Octopus\Tentacle\".|
-|-h, --home|The home directory of the Octopus Tentacle. Defaults to "%SYSTEMDRIVE%\Octopus\"|
+|-l, --location|The install directory of the Octopus Tentacle. Defaults to "%PROGRAMFILES%\Octopus\Tentacle".|
+|-h, --home|The home directory of the Octopus Tentacle. Defaults to "%SYSTEMDRIVE%\Octopus"|
 | -t, --thumbprint|The Octopus Server thumbprint. Defaults to global certificate thumbprint.|
 |-p, --port|The port of the Octopus Tentacle. Defaults to 10933.|
 
