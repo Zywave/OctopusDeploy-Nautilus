@@ -10,15 +10,15 @@ namespace Nautilus
     [Verb("install", HelpText = "Installs an Octopus Tentacle on the local machine.")]
     public class InstallCommand : CommandBase
     {
-        [Option('l', "location", Required = false, HelpText = "The install directory of the Octopus Tentacle. Defaults to Program Files.")]
+        [Option('l', "location", Required = false, HelpText = "The install directory of the Octopus Tentacle. Defaults to \"%PROGRAMFILES%\\Octopus Deploy\\Tentacle\".")]
         public string InstallLocation { get; set; }
         
-        [Option('h', "home", Required = false, HelpText = "The home directory of the Octopus Tentacle. Defaults to \"C:\\Octopus\"")]
+        [Option('h', "home", Required = false, HelpText = "The home directory of the Octopus Tentacle. Defaults to \"%SYSTEMDRIVE%\\Octopus\".")]
         public string HomeLocation { get; set; }
         
         [Option('t', "thumbprint", Required = false, HelpText = "The Octopus Server thumbprint. Defaults to global certificate thumbprint.")]
         public string Thumbprint { get; set; }      
-                
+               
         [Option('p', "port", Required = false, HelpText = "The port of the Octopus Tentacle. Defaults to 10933.")]
         public int? Port { get; set; }
         
@@ -33,7 +33,7 @@ namespace Nautilus
             
             installLocation = InstallLocation ?? Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), @"Octopus Deploy\Tentacle");
             
-            var homeLocation = HomeLocation ?? @"C:\Octopus";
+            var homeLocation = HomeLocation ?? Environment.GetEnvironmentVariable("SYSTEMDRIVE") + @"\Octopus";
             
             var thumbprint = Thumbprint;
             if (thumbprint == null)
