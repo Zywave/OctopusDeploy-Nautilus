@@ -1,9 +1,7 @@
 version: '{build}'
+image: Visual Studio 2015
 init:
-- cmd: >-
-    choco install dotnetcore --version 1.0.0.001598 --yes
-
-    set path=%path%;C:\Program Files\dotnet\bin
+- cmd: '@powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString(''https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/install.ps1''))"'
 install:
 - cmd: dotnet restore
 cache: C:\Users\appveyor\.nuget\packages
