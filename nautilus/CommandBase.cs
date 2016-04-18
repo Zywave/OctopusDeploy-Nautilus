@@ -19,18 +19,21 @@ namespace Nautilus
         
         protected abstract int Run(OctopusProxy octopus);
         
-        protected static void Write(string value, ConsoleColor? color = null)
+        protected static void Write(string value, ConsoleColor? color = null, int indent = 0)
         {
-            Write(value, color, Console.Write);
+            Write(value, color, Console.Write, indent);
         }
         
-        protected static void WriteLine(string value = null, ConsoleColor? color = null)
+        protected static void WriteLine(string value = null, ConsoleColor? color = null, int indent = 0)
         {
-            Write(value, color, Console.WriteLine);
+            Write(value, color, Console.WriteLine, indent);
         }
         
-        private static void Write(string value, ConsoleColor? color, Action<string> write)
+        private static void Write(string value, ConsoleColor? color, Action<string> write, int indent = 0)
         {
+            var indentString = new String(' ', indent);
+            value = indentString + value.Replace("\n", "\n" + indentString);
+            
             if (color.HasValue)
             {
                 var oldColor = Console.ForegroundColor;

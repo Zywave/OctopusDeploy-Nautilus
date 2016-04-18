@@ -56,13 +56,13 @@ namespace Nautilus
                 if (HasAnyRole(deploymentProcess, machine.Roles))
                 {
                     matchedProjects[project.Id] = project;
-                    WriteLine($" {project.Id} {project.Name}");
+                    WriteLine($"{project.Id} {project.Name}", indent: 1);
                 }
             }
             
             if (!matchedProjects.Any())
             {
-                WriteLine(" No projects found");
+                WriteLine("No projects found", indent: 1);
                 return 0;
             }
             
@@ -76,7 +76,7 @@ namespace Nautilus
                 {
                     var project = matchedProjects[item.ProjectId];
                                       
-                    Write($" {project.Name} {item.ReleaseVersion} -> {GetEnvironmentName(item.EnvironmentId, environments)}... ");
+                    Write($"{project.Name} {item.ReleaseVersion} -> {GetEnvironmentName(item.EnvironmentId, environments)}... ", indent: 1);
                    
                     if (!Force)
                     {

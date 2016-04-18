@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Text;
 using CommandLine;
 using Microsoft.Win32;
 
@@ -66,9 +67,11 @@ namespace Nautilus
             WriteLine("done");       
              
             Write($"Installing tentacle from {filePath}... ");
-            if (RunProcess("msiexec", $"INSTALLLOCATION=\"{installLocation}\" /i \"{filePath}\" /quiet"))
+            var output = new StringBuilder();
+            if (RunProcess("msiexec", $"INSTALLLOCATION=\"{installLocation}\" /i \"{filePath}\" /quiet", output))
             {                      
-                WriteLine("done");
+                WriteLine("done");                
+                WriteLine(output.ToString(), ConsoleColor.DarkGray, 1);
                 
                 Write("Configuring tentacle... ");            
                 var tentacleExe = installLocation + @"\Tentacle.exe";     
@@ -79,29 +82,36 @@ namespace Nautilus
                     File.Delete(configFilePath);
                 }
                 
-                if (RunProcess(tentacleExe, $"create-instance --instance \"Tentacle\" --config \"{configFilePath}\" --console"))
-                if (RunProcess(tentacleExe, $"new-certificate --instance \"Tentacle\" --if-blank --console"))
-                if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --reset-trust --console"))
-                if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --home \"{homeLocation}\" --app \"{appLocation}\" --port \"{port}\" --console"))
-                if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --trust \"{thumbprint}\" --console"))
-                if (RunProcess("netsh", $"advfirewall firewall add rule \"name=Octopus Deploy Tentacle\" dir=in action=allow protocol=TCP localport={port}"))
-                if (RunProcess(tentacleExe, $"service --instance \"Tentacle\" --install --start --console"))
+                output.Clear(); 
+                if (RunProcess(tentacleExe, $"create-instance --instance \"Tentacle\" --config \"{configFilePath}\" --console", output))
+                if (RunProcess(tentacleExe, $"new-certificate --instance \"Tentacle\" --if-blank --console", output))
+                if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --reset-trust --console", output))
+                if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --home \"{homeLocation}\" --app \"{appLocation}\" --port \"{port}\" --console", output))
+                if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --trust \"{thumbprint}\" --console", output))
+                if (RunProcess("netsh", $"advfirewall firewall add rule \"name=Octopus Deploy Tentacle\" dir=in action=allow protocol=TCP localport={port}", output))
+                if (RunProcess(tentacleExe, $"service --instance \"Tentacle\" --install --start --console", output))
                 {
                     WriteLine("done");
+                    WriteLine(output.ToString(), ConsoleColor.DarkGray, 1);
                     return 0;
                 }
-            }      
+            }
             
+            WriteLine("failed", ConsoleColor.Red);
+            WriteLine(output.ToString(), ConsoleColor.DarkGray, 1);            
             return 1;
         }
         
-        private static bool RunProcess(string fileName, string arguments)
+        private static bool RunProcess(string fileName, string arguments, StringBuilder output)
         {
+            output.AppendLine($"{fileName} {arguments}");
+            
             var startInfo = new ProcessStartInfo
             {
                 FileName = fileName,
                 Arguments = arguments,
                 RedirectStandardOutput = true,
+                RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
@@ -111,18 +121,18 @@ namespace Nautilus
                 const int timeout = 120000;
                 if (!process.WaitForExit(timeout))
                 {
-                    WriteLine("failed", ConsoleColor.Red);
-                    WriteLine($"Error: \"{fileName} {arguments}\" operation timed out ({timeout} milliseconds)");
+                    output.AppendLine($"Error: Operation timed out ({timeout} milliseconds)");
                     return false;
                 }
-                
+                                    
                 if (process.ExitCode != 0)
                 {                    
-                    WriteLine("failed", ConsoleColor.Red);
-                    WriteLine($"Error: \"{fileName} {arguments}\" operation failed and exited with code {process.ExitCode}");
+                    output.AppendLine($"Error: Operation failed and exited with code {process.ExitCode}");
+                    output.AppendLine(process.StandardError.ReadToEnd());
                     return false;
                 }
                 
+                output.AppendLine(process.StandardOutput.ReadToEnd());                
                 return true;
             }
         }
