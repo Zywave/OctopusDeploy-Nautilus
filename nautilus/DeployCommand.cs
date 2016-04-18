@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using CommandLine;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 
 namespace Nautilus
@@ -92,16 +93,32 @@ namespace Nautilus
                         }
                     }
                     
-                    var deployment = octopus.CreateDeployment(machine.Id, item.ReleaseId, item.EnvironmentId, $"Nautilus: {machine.Id}");
-                    
-                    if (Wait) 
+                    try
                     {
-                        var task = octopus.WaitForTaskCompletion(deployment.TaskId);
-                        WriteLine(task.FinishedSuccessfully ? "succeeded" : "failed", task.FinishedSuccessfully ? ConsoleColor.Green : ConsoleColor.Red);
-                        continue;                        
-                    }
+                        var deployment = octopus.CreateDeployment(machine.Id, item.ReleaseId, item.EnvironmentId, $"Nautilus: {machine.Id}");
                         
-                    WriteLine("created");
+                        if (Wait) 
+                        {
+                            var task = octopus.WaitForTaskCompletion(deployment.TaskId);
+                            if (task.FinishedSuccessfully)
+                            {
+                                WriteLine("succeeded", ConsoleColor.Green);
+                            }
+                            else
+                            {
+                                WriteLine("failed", ConsoleColor.Red);
+                                WriteLine(task.ErrorMessage, ConsoleColor.DarkGray, 1);
+                            }
+                            continue;                        
+                        }
+                            
+                        WriteLine("created");
+                    }
+                    catch (OctopusValidationException ex)
+                    {
+                        WriteLine("invalid", ConsoleColor.Red);
+                        WriteLine(ex.ToString(), ConsoleColor.DarkGray, 1);
+                    }
                 }
             }
             
