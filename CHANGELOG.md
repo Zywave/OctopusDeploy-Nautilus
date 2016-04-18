@@ -1,3 +1,13 @@
+<a name="1.0.4"></a>
+## [1.0.4](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.3...v1.0.4) (2016-04-18)
+
+
+### Bug Fixes
+
+* trim trailing slashes from directories as Tentacle.exe commands do not like them ([df1be10](https://github.com/zywave/OctopusDeploy-Nautilus/commit/df1be10))
+
+
+
 <a name="1.0.3"></a>
 ## [1.0.3](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.2...v1.0.3) (2016-04-18)
 

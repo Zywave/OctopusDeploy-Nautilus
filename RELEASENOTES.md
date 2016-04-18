@@ -1,3 +1,3 @@
-### Features
+### Bug Fixes
 
-* verbose install output ([8cbbe03](https://github.com/zywave/OctopusDeploy-Nautilus/commit/8cbbe03))
+* trim trailing slashes from directories as Tentacle.exe commands do not like them ([df1be10](https://github.com/zywave/OctopusDeploy-Nautilus/commit/df1be10))
