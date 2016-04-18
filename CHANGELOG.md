@@ -1,3 +1,13 @@
+<a name="1.0.3"></a>
+## [1.0.3](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.2...v1.0.3) (2016-04-18)
+
+
+### Features
+
+* verbose install output ([8cbbe03](https://github.com/zywave/OctopusDeploy-Nautilus/commit/8cbbe03))
+
+
+
 <a name="1.0.2"></a>
 ## [1.0.2](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.1...v1.0.2) (2016-04-18)
 
