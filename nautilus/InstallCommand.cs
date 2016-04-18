@@ -38,8 +38,10 @@ namespace Nautilus
             installLocation = InstallLocation ?? Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), @"Octopus Deploy\Tentacle");
             
             var homeLocation = HomeLocation ?? Environment.GetEnvironmentVariable("SYSTEMDRIVE") + @"\Octopus";
+            homeLocation = homeLocation.TrimEnd(Path.DirectorySeparatorChar);
             
             var appLocation = AppLocation ?? Path.Combine(homeLocation, "Applications");
+            appLocation = appLocation.TrimEnd(Path.DirectorySeparatorChar);
             
             var thumbprint = Thumbprint;
             if (thumbprint == null)
