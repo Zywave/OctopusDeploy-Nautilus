@@ -1,3 +1,16 @@
+<a name="1.0.2"></a>
+## [1.0.2](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.1...v1.0.2) (2016-04-18)
+
+
+### Bug Fixes
+
+* check for file and directory existence before calling delete file on install command ([2b4a575](https://github.com/zywave/OctopusDeploy-Nautilus/commit/2b4a575))
+
+### Features
+
+* applications directory option on install ([2b4a575](https://github.com/zywave/OctopusDeploy-Nautilus/commit/2b4a575))
+
+
 <a name="1.0.1"></a>
 ## [1.0.1](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.0...v1.0.1) (2016-04-15)
 
