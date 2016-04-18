@@ -16,6 +16,9 @@ namespace Nautilus
         [Option('h', "home", Required = false, HelpText = "The home directory of the Octopus Tentacle. Defaults to \"%SYSTEMDRIVE%\\Octopus\".")]
         public string HomeLocation { get; set; }
         
+        [Option('a', "app", Required = false, HelpText = "The application directory of the Octopus Tentacle. Defaults to \"<home>\\Applications\".")]
+        public string AppLocation { get; set; }
+        
         [Option('t', "thumbprint", Required = false, HelpText = "The Octopus Server thumbprint. Defaults to global certificate thumbprint.")]
         public string Thumbprint { get; set; }      
                
@@ -34,6 +37,8 @@ namespace Nautilus
             installLocation = InstallLocation ?? Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), @"Octopus Deploy\Tentacle");
             
             var homeLocation = HomeLocation ?? Environment.GetEnvironmentVariable("SYSTEMDRIVE") + @"\Octopus";
+            
+            var appLocation = AppLocation ?? Path.Combine(homeLocation, "Applications");
             
             var thumbprint = Thumbprint;
             if (thumbprint == null)
@@ -68,12 +73,16 @@ namespace Nautilus
                 Write("Configuring tentacle... ");            
                 var tentacleExe = installLocation + @"\Tentacle.exe";     
                 
-                File.Delete($"{homeLocation}\\Tentacle.config");
+                var configFilePath = $"{homeLocation}\\Tentacle.config";
+                if (File.Exists(configFilePath))
+                {
+                    File.Delete(configFilePath);
+                }
                 
-                if (RunProcess(tentacleExe, $"create-instance --instance \"Tentacle\" --config \"{homeLocation}\\Tentacle.config\" --console"))
+                if (RunProcess(tentacleExe, $"create-instance --instance \"Tentacle\" --config \"{configFilePath}\" --console"))
                 if (RunProcess(tentacleExe, $"new-certificate --instance \"Tentacle\" --if-blank --console"))
                 if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --reset-trust --console"))
-                if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --home \"{homeLocation}\" --app \"{homeLocation}\\Applications\" --port \"{port}\" --console"))
+                if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --home \"{homeLocation}\" --app \"{appLocation}\" --port \"{port}\" --console"))
                 if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --trust \"{thumbprint}\" --console"))
                 if (RunProcess("netsh", $"advfirewall firewall add rule \"name=Octopus Deploy Tentacle\" dir=in action=allow protocol=TCP localport={port}"))
                 if (RunProcess(tentacleExe, $"service --instance \"Tentacle\" --install --start --console"))
