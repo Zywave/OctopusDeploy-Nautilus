@@ -2,7 +2,7 @@ $release = Invoke-RestMethod -Uri "https://api.github.com/repos/Zywave/OctopusDe
 $asset = $release.assets | Where-Object { $_.name -eq "nautilus.exe" }
 (New-Object System.Net.WebClient).DownloadFile($asset.browser_download_url, ".\nautilus.exe")
 
-.\nautilus.exe install -s $env:OctopusServerAddress -k $env:OctopusAPIKey -h "$env:OctopusHomePath"
+.\nautilus.exe install -s $env:OctopusServerAddress -k $env:OctopusAPIKey -a "$env:OctopusAppPath"
 If (-Not $?) { Exit $LastExitCode }
 
 .\nautilus.exe register -s $env:OctopusServerAddress -k $env:OctopusAPIKey -e $env:OctopusEnvironment -r $env:OctopusRole -u
