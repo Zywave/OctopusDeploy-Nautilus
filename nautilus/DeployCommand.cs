@@ -117,7 +117,7 @@ namespace Nautilus
                     catch (OctopusValidationException ex)
                     {
                         WriteLine("invalid", ConsoleColor.Red);
-                        WriteLine(ex.ToString(), ConsoleColor.DarkGray, 1);
+                        WriteLine(ex.ErrorMessage, ConsoleColor.DarkGray, 1);
                     }
                 }
             }
