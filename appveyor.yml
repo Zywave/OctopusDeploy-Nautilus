@@ -7,17 +7,27 @@ install:
 cache: C:\Users\appveyor\.nuget\packages
 build_script:
 - ps: >-
-    dotnet build nautilus --configuration Release
+    dotnet build src\Nautilus --configuration Release-Lib
+    
+    dotnet build src\Nautilus --configuration Release-Cli    
 
     nuget install LibZ.Tool -Version 1.2.0
 
-    .\LibZ.Tool.1.2.0.0\tools\libz.exe inject-dll --assembly ".\nautilus\bin\Release\dnx451\win7-x64\nautilus.exe" --include ".\nautilus\bin\Release\dnx451\win7-x64\*.dll" --move
+    .\LibZ.Tool.1.2.0.0\tools\libz.exe inject-dll --assembly ".\src\Nautilus\bin\Release-Cli\dnx451\win7-x64\nautilus.exe" --include ".\src\Nautilus\bin\Release-Cli\dnx451\win7-x64\*.dll" --move
 
-    Get-ChildItem .\nautilus\bin\Release\dnx451\win7-x64\nautilus.exe | % { Push-AppveyorArtifact $_.FullName }
+    Get-ChildItem .\src\Nautilus\bin\Release-Cli\dnx451\win7-x64\nautilus.exe | % { Push-AppveyorArtifact $_.FullName }
+    
+    md output\chocolatey
+    
+    nuget pack Chocolatey.nuspec -NoPackageAnalysis -OutputDirectory output\chocolatey
 
-    nuget pack Nautilus.nuspec -NoPackageAnalysis
+    Get-ChildItem .\output\chocolatey\nautilus.*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName "chocolatey-$_.Name" -DeploymentName Chocolatey }
+    
+    md output\nuget
+    
+    nuget pack NuGet.nuspec -NoPackageAnalysis -OutputDirectory output\nuget
 
-    Get-ChildItem .\Nautilus.*.nupkg | % { Push-AppveyorArtifact $_.FullName -DeploymentName Chocolatey }
+    Get-ChildItem .\output\nuget\nautilus.*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName "nuget-$_.Name" -DeploymentName NuGet }
 
     $rnp = Resolve-Path(".\RELEASENOTES.md")
 

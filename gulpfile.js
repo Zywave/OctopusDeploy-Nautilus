@@ -40,9 +40,9 @@ gulp.task('bump-version', function () {
       .pipe(bump({ type: type, preid: 'prerelease' }).on('error', gutil.log))
       .pipe(gulp.dest('./'));
 	  
-	var projectBump = gulp.src(['./nautilus/project.json'])
+	var projectBump = gulp.src(['./src/Nautilus/project.json'])
       .pipe(bump({ type: type, preid: 'prerelease' }).on('error', gutil.log))
-      .pipe(gulp.dest('./nautilus/'));
+      .pipe(gulp.dest('./src/Nautilus/'));
 	  
 	return es.merge(packageBump, projectBump);
 });
@@ -64,13 +64,23 @@ gulp.task('releasenotes', function () {
 gulp.task('update-nuspec', function () {
     var version = getVersion(true);
 
-    return gulp.src('Nautilus.nuspec')
+    var chocolateyUpdate = gulp.src('Chocolatey.nuspec')
         .pipe(xmlpoke({
             replacements: [
                 { xpath: '/package/metadata/version', value: version }
             ]
         }))
         .pipe(gulp.dest('./'));
+
+    var nugetUpdate = gulp.src('NuGet.nuspec')
+        .pipe(xmlpoke({
+            replacements: [
+                { xpath: '/package/metadata/version', value: version }
+            ]
+        }))
+        .pipe(gulp.dest('./'));
+        
+    return es.merge(chocolateyUpdate, nugetUpdate);
 });
 
 gulp.task('commit-changes', function () {

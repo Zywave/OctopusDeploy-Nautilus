@@ -4,15 +4,22 @@
 [![Chocolatey](https://img.shields.io/chocolatey/v/nautilus.svg)](https://chocolatey.org/packages/nautilus)
 
 
-Nautilus is a command line tool that helps to automate [Octopus](https://octopus.com/) deploys during horizontal scaling operations by determining all of the releases to deploy by the machine's role and environment.  It is also capable of downloading, installing, configuring, updating and registering the Octopus Tentacle.
+Nautilus is a library and command line tool that helps to automate [Octopus](https://octopus.com/) deploys during horizontal scaling operations by determining all of the releases to deploy by the machine's role and environment.  It is also capable of downloading, installing, configuring, updating and registering the Octopus Tentacle.
 
 ## Install
 
-Nautilus is available via [Chocolatey](https://chocolatey.org/) or direct download from [releases](https://github.com/Zywave/OctopusDeploy-Nautilus/releases/latest).  Additionally, a simple Powershell script that downloads the latest nautilus.exe into the current directory is available to simplify automation.
+Nautilus is available via [Chocolatey](https://chocolatey.org/packages/nautilus), [NuGet](https://www.nuget.org/packages/nautilus) or direct download from [releases](https://github.com/Zywave/OctopusDeploy-Nautilus/releases/latest).  Additionally, a simple Powershell script that downloads the latest nautilus.exe into the current directory is available to simplify automation.
 
 ##### Chocolately install
+
 ```
 choco install nautilus
+```
+
+##### NuGet install
+
+```
+nuget install nautilus
 ```
 
 ##### Powershell download
@@ -25,7 +32,7 @@ iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.co
 @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/Zywave/OctopusDeploy-Nautilus/master/scripts/download.ps1'))"
 ```
 
-## Commands
+## CLI Commands
 
 ### Deploy
 Creates deployments for the latest release of all projects related to the target machine by role and environment.

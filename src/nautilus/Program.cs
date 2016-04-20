@@ -1,5 +1,8 @@
-﻿using System.Net;
+﻿
+#if CLI
+using System.Net;
 using CommandLine;
+using Nautilus.Commands;
 
 namespace Nautilus
 {
@@ -26,3 +29,4 @@ namespace Nautilus
         }
     }
 }
+#endif

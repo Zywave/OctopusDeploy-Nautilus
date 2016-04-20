@@ -12,6 +12,6 @@
     <releaseNotes>https://github.com/Zywave/OctopusDeploy-Nautilus/blob/master/RELEASENOTES.md</releaseNotes>
   </metadata>
   <files>
-    <file src="nautilus\bin\Release\dnx451\win7-x64\nautilus.exe" target=""/>
+    <file src="src\nautilus\bin\Release-Cli\dnx451\win7-x64\nautilus.exe" target=""/>
   </files>
 </package>

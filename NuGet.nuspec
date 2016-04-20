@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?><package>
+  <metadata>
+    <id>nautilus</id>
+    <title>OctopusDeploy-Nautilus</title>
+    <version>1.0.4</version>
+    <authors>cruikshj</authors>
+    <summary>A library and command line application for automating horizontal scaling operations in conjunction with Octopus Deploy.</summary>
+    <description>Nautilus is a library and command line tool that helps to automate Octopus deploys during horizontal scaling operations by determining all of the releases to deploy by the machine's role and environment. It is also capable of downloading, installing, configuring, updating and registering the Octopus Tentacle.</description>
+    <tags>Octopus Deploy Scaling</tags>
+    <projectUrl>https://github.com/Zywave/OctopusDeploy-Nautilus</projectUrl>
+    <licenseUrl>https://github.com/Zywave/OctopusDeploy-Nautilus/blob/master/LICENSE</licenseUrl>
+    <releaseNotes>https://github.com/Zywave/OctopusDeploy-Nautilus/blob/master/RELEASENOTES.md</releaseNotes>
+    <dependencies>
+      <dependency id="Octopus.Client" version="3.3.4" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="src\Nautilus\bin\Release-Lib\dnx451\win7-x64\Nautilus.dll" target="lib"/>
+    <file src="src\Nautilus\bin\Release-Cli\dnx451\win7-x64\nautilus.exe" target="tools"/>
+  </files>
+</package>

@@ -13,36 +13,30 @@ namespace Nautilus
         {
             if (octopusRepository == null) throw new ArgumentNullException(nameof(octopusRepository));
 
-            _repository = octopusRepository;
+            Repository = octopusRepository;
         }
         
-        public OctopusProxy(string serverAddress, string apiKey)
-        {
-            if (serverAddress == null) throw new ArgumentNullException(nameof(serverAddress));
-            if (apiKey == null) throw new ArgumentNullException(nameof(apiKey));
-
-            _repository = new OctopusRepository(new OctopusServerEndpoint(serverAddress, apiKey));
-        }
+        private IOctopusRepository Repository { get; }
         
         public SystemInfoResource GetSystemInfo() 
         {
-            var serverStatus = _repository.ServerStatus.GetServerStatus();
-            return _repository.ServerStatus.GetSystemInfo(serverStatus);
+            var serverStatus = Repository.ServerStatus.GetServerStatus();
+            return Repository.ServerStatus.GetSystemInfo(serverStatus);
         }
         
         public CertificateResource GetGlobalCertificate()
         {
-            return _repository.Certificates.Get("certificate-global");
+            return Repository.Certificates.Get("certificate-global");
         }
 
         public MachineResource GetMachine(string name)
         {
-            return _repository.Machines.FindByName(name);
+            return Repository.Machines.FindByName(name);
         }
         
         public IEnumerable<MachineResource> GetMachines(string role)
         {
-            return _repository.Machines.FindMany(m => m.Roles.Contains(role));
+            return Repository.Machines.FindMany(m => m.Roles.Contains(role));
         }
                 
         public MachineResource CreateMachine(string name, string thumbprint, string hostname, int port, IEnumerable<string> environmentNames, IEnumerable<string> roles)
@@ -51,7 +45,7 @@ namespace Nautilus
             
             machine.Name = name;
             
-            var environments = _repository.Environments.FindByNames(environmentNames);
+            var environments = Repository.Environments.FindByNames(environmentNames);
             foreach (var environment in environments)
             {                
                 machine.EnvironmentIds.Add(environment.Id);
@@ -67,13 +61,13 @@ namespace Nautilus
             endpoint.Thumbprint = thumbprint;
             machine.Endpoint = endpoint;
                         
-            return _repository.Machines.Create(machine);    
+            return Repository.Machines.Create(machine);    
         }
         
         public MachineResource ModifyMachine(MachineResource machine, string thumbprint, string hostname, int port, IEnumerable<string> environmentNames, IEnumerable<string> roles)
         {            
             machine.EnvironmentIds.Clear();    
-            var environments = _repository.Environments.FindByNames(environmentNames);
+            var environments = Repository.Environments.FindByNames(environmentNames);
             foreach (var environment in environments)
             {                
                 machine.EnvironmentIds.Add(environment.Id);
@@ -90,32 +84,32 @@ namespace Nautilus
             endpoint.Thumbprint = thumbprint;
             machine.Endpoint = endpoint;
                         
-            return _repository.Machines.Modify(machine);
+            return Repository.Machines.Modify(machine);
         }
         
         public void DeleteMachine(MachineResource machine)
         {
-            _repository.Machines.Delete(machine);
+            Repository.Machines.Delete(machine);
         }
         
         public IEnumerable<ProjectResource> GetProjects()
         {
-            return _repository.Projects.FindAll();
+            return Repository.Projects.FindAll();
         }
         
         public IEnumerable<EnvironmentResource> GetEnvironments()
         {
-            return _repository.Environments.FindAll();
+            return Repository.Environments.FindAll();
         }
         
         public DeploymentProcessResource GetDeploymentProcess(string id)
         {
-            return _repository.DeploymentProcesses.Get(id);
+            return Repository.DeploymentProcesses.Get(id);
         }
         
         public DashboardResource GetDynamicDashboard(IEnumerable<string> projectIds, IEnumerable<string> environmentIds)
         {
-            return _repository.Dashboards.GetDynamicDashboard(projectIds.ToArray(), environmentIds.ToArray());
+            return Repository.Dashboards.GetDynamicDashboard(projectIds.ToArray(), environmentIds.ToArray());
         }
         
         public DeploymentResource CreateDeployment(string machineId, string releaseId, string environmentId, string comment)
@@ -128,45 +122,43 @@ namespace Nautilus
                 Comments = comment
             };
             
-            var deployment = _repository.Deployments.Create(deploymentResource);
+            var deployment = Repository.Deployments.Create(deploymentResource);
             
             return deployment;
         }
         
         public TaskResource ExecuteTentacleUpgrade(string machineId)
         {            
-            var task = _repository.Tasks.ExecuteTentacleUpgrade(null, null, new[] { machineId });
-            _repository.Tasks.WaitForCompletion(task);
-            task = _repository.Tasks.Get(task.Id);
+            var task = Repository.Tasks.ExecuteTentacleUpgrade(null, null, new[] { machineId });
+            Repository.Tasks.WaitForCompletion(task);
+            task = Repository.Tasks.Get(task.Id);
             return task;
         }
         
         public TaskResource ExecuteCalamariUpdate(string machineId)
         {
-            var task = _repository.Tasks.ExecuteCalamariUpdate(null, new[] { machineId });
-            _repository.Tasks.WaitForCompletion(task);
-            task = _repository.Tasks.Get(task.Id);
+            var task = Repository.Tasks.ExecuteCalamariUpdate(null, new[] { machineId });
+            Repository.Tasks.WaitForCompletion(task);
+            task = Repository.Tasks.Get(task.Id);
             return task;
         }
         
         public TaskResource WaitForTaskCompletion(string taskId)
         {
-            var task = _repository.Tasks.Get(taskId);
-            _repository.Tasks.WaitForCompletion(task);
-            task = _repository.Tasks.Get(taskId);
+            var task = Repository.Tasks.Get(taskId);
+            Repository.Tasks.WaitForCompletion(task);
+            task = Repository.Tasks.Get(taskId);
             return task;
         }
         
         public TaskResource GetTask(string taskId)
         {
-            return _repository.Tasks.Get(taskId);
+            return Repository.Tasks.Get(taskId);
         }
         
         public string GetTaskRawOutputLog(TaskResource task)
         {
-            return _repository.Tasks.GetRawOutputLog(task);
+            return Repository.Tasks.GetRawOutputLog(task);
         }
-
-        private IOctopusRepository _repository;
     }
 }
