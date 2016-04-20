@@ -3,7 +3,7 @@ using CommandLine;
 
 namespace Nautilus
 {
-    public abstract class CommandBase
+    public abstract class OptionsBase 
     {
         [Option('s', "server", Required = true, HelpText = "Octopus server address (e.g. http://your-octopus-server/).")]
         public string OctopusServerAddress { get; set; }

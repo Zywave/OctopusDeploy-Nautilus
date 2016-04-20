@@ -7,8 +7,15 @@ using Octopus.Client.Model.Endpoints;
 
 namespace Nautilus
 {
-    public class OctopusProxy
+    internal class OctopusProxy
     {
+        public OctopusProxy(IOctopusRepository octopusRepository)
+        {
+            if (octopusRepository == null) throw new ArgumentNullException(nameof(octopusRepository));
+
+            _repository = octopusRepository;
+        }
+        
         public OctopusProxy(string serverAddress, string apiKey)
         {
             if (serverAddress == null) throw new ArgumentNullException(nameof(serverAddress));

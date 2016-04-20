@@ -8,62 +8,57 @@ using Octopus.Client.Model;
 
 namespace Nautilus
 {    
-    [Verb("deploy", HelpText = "Creates deployments for the latest release of all projects related to the target machine by role and environment.")]
-    public class DeployCommand : CommandBase
+    public class NautilusService
     {
-        [Option('n', "name", Required = false, HelpText = "The target machine name. Defaults to the local machine name.")]
-        public string MachineName { get; set; }
+        public NautilusService(IOctopusRepository octopusRepository, TextWriter log = null)
+        {
+            if (octopusRepository == null) throw new ArgumentNullException(nameof(octopusRepository));
+            
+            _octopus = new OctopusProxy(octopusRepository);
+            _log = log ?? TextWriter.Null;
+        }
         
-        [Option('w', "wait", Required = false, HelpText = "Specifies whether to wait for each deployment to complete before exiting.")]
-        public bool Wait { get; set; }
-        
-        [Option('f', "force", Required = false, HelpText = "Specifies whether to force redeployment of releases to the target machine.")]
-        public bool Force { get; set; }
-        
-        [Option('o', "nonce", Required = false, HelpText = "An arbritrary value to ensure that a deploy is only run once.  If the specified value matches a value previously used, this deploy will be prevented. The value is stored in an environment variable (NAUTILUS_NONCE) on the local machine.")]
-        public int? Nonce { get; set; }
-        
-        protected override int Run(OctopusProxy octopus)
-        {                
-            var machineName = MachineName ?? Environment.MachineName;
-                        
-            var machine = octopus.GetMachine(machineName);
+        public void Deploy(string machineName = null, bool wait = false, bool force = false, int? nonce = null)
+        {
+            var machineName = machineName ?? Environment.MachineName;
+                            
+            var machine = _octopus.GetMachine(machineName);
             if (machine == null)
             {
-                WriteLine($"Error: The target machine ({machineName}) is not registered with Octopus ({OctopusServerAddress})");
+                _log.WriteLine($"Error: The target machine ({machineName}) is not registered with Octopus ({OctopusServerAddress})");
                 return 1;
             }
             
-            if (Nonce.HasValue && CheckAndUpdateNonces(Nonce.Value))
+            if (nonce.HasValue && CheckAndUpdateNonces(nonce.Value))
             {
-                WriteLine($"Preventing repeat deploy based on the specified nonce value ({Nonce.Value})");
+                _log.WriteLine($"Preventing repeat deploy based on the specified nonce value ({nonce.Value})");
                 return 0;
             }            
             
             var successExpression = new Regex($"Success: {machine.Name}{Environment.NewLine}");
             
-            var environments = octopus.GetEnvironments().ToDictionary(i => i.Id);
+            var environments = _octopus.GetEnvironments().ToDictionary(i => i.Id);
             
-            WriteLine($"Target machine: {machine.Id} {machine.Name} {String.Join(",", machine.Roles)} {String.Join(",", machine.EnvironmentIds.Select(e => GetEnvironmentName(e, environments)))}");
+            _log.WriteLine($"Target machine: {machine.Id} {machine.Name} {String.Join(",", machine.Roles)} {String.Join(",", machine.EnvironmentIds.Select(e => GetEnvironmentName(e, environments)))}");
             
-            WriteLine($"Finding projects with the target roles ({String.Join(",", machine.Roles)})...");
+            _log.WriteLine($"Finding projects with the target roles ({String.Join(",", machine.Roles)})...");
             
             var matchedProjects = new Dictionary<string, ProjectResource>();            
-            var projects = octopus.GetProjects();
+            var projects = _octopus.GetProjects();
             foreach(var project in projects) 
             {
-                var deploymentProcess = octopus.GetDeploymentProcess(project.DeploymentProcessId);
+                var deploymentProcess = _octopus.GetDeploymentProcess(project.DeploymentProcessId);
                 
                 if (HasAnyRole(deploymentProcess, machine.Roles))
                 {
                     matchedProjects[project.Id] = project;
-                    WriteLine($"{project.Id} {project.Name}", indent: 1);
+                    _log.WriteLine(Indent($"{project.Id} {project.Name}"));
                 }
             }
             
             if (!matchedProjects.Any())
             {
-                WriteLine("No projects found", indent: 1);
+                _log.WriteLine(Indent("No projects found"));
                 return 0;
             }
             
@@ -76,18 +71,18 @@ namespace Nautilus
                 if (item.ReleaseId != null)
                 {
                     var project = matchedProjects[item.ProjectId];
-                                      
-                    Write($"{project.Name} {item.ReleaseVersion} -> {GetEnvironmentName(item.EnvironmentId, environments)}... ", indent: 1);
-                   
-                    if (!Force)
+                                        
+                    _log.Write($"{project.Name} {item.ReleaseVersion} -> {GetEnvironmentName(item.EnvironmentId, environments)}... ", 1);
+                    
+                    if (!force)
                     {
-                        var releaseTask = octopus.GetTask(item.TaskId);
+                        var releaseTask = _octopus.GetTask(item.TaskId);
                         if (releaseTask.FinishedSuccessfully)
                         {
-                            var rawOuput = octopus.GetTaskRawOutputLog(releaseTask);
+                            var rawOuput = _octopus.GetTaskRawOutputLog(releaseTask);
                             if (successExpression.IsMatch(rawOuput))
                             {
-                                WriteLine("already deployed");
+                                _log.WriteLine("already deployed");
                                 continue;
                             }
                         }
@@ -95,29 +90,29 @@ namespace Nautilus
                     
                     try
                     {
-                        var deployment = octopus.CreateDeployment(machine.Id, item.ReleaseId, item.EnvironmentId, $"Nautilus: {machine.Id}");
+                        var deployment = _octopus.CreateDeployment(machine.Id, item.ReleaseId, item.EnvironmentId, $"Nautilus: {machine.Id}");
                         
-                        if (Wait) 
+                        if (wait) 
                         {
-                            var task = octopus.WaitForTaskCompletion(deployment.TaskId);
+                            var task = _octopus.WaitForTaskCompletion(deployment.TaskId);
                             if (task.FinishedSuccessfully)
                             {
-                                WriteLine("succeeded", ConsoleColor.Green);
+                                _log.WriteLine("succeeded");
                             }
                             else
                             {
-                                WriteLine("failed", ConsoleColor.Red);
-                                WriteLine(task.ErrorMessage, ConsoleColor.DarkGray, 1);
+                                _log.WriteLine("failed");
+                                _log.WriteLine(Indent(task.ErrorMessage));
                             }
                             continue;                        
                         }
                             
-                        WriteLine("created");
+                        _log.WriteLine("created");
                     }
                     catch (OctopusValidationException ex)
                     {
-                        WriteLine("invalid", ConsoleColor.Red);
-                        WriteLine(ex.ToString(), ConsoleColor.DarkGray, 1);
+                        _log.WriteLine("invalid");
+                        _log.WriteLine(Indent(ex.ToString()));
                     }
                 }
             }
@@ -179,5 +174,14 @@ namespace Nautilus
             
             return false;
         }
+       
+        private static string Indent(string value, Action<string> write, int indent = 1)
+        {
+            var indentString = new String(' ', indent);
+            return indentString + value.Replace("\n", "\n" + indentString);
+        }
+        
+        private readonly OctopusProxy _octopus;
+        private readonly TextWriter _log;
     }
 }

@@ -1,0 +1,44 @@
+{
+    "version": "1.0.4",
+    "dependencies": {
+        "CommandLineParser": "2.0.275-beta",
+        "Octopus.Client": "3.3.4"
+    },
+    "frameworks": {
+        "dnx451": {
+            "dependencies": {}
+        }
+    },
+    "configurations": {
+        "Debug-Cli": {
+            "compilationOptions": {
+                "outputName": "nautilus",
+                "define": ["DEBUG", "TRACE", "CLI"],
+                "emitEntryPoint": true
+            }
+        },
+        "Debug-Lib": {
+            "compilationOptions": {
+                "outputName": "Nautilus",
+                "define": ["DEBUG", "TRACE", "LIB"],
+                "emitEntryPoint": false
+            }
+        },
+        "Release-Cli": {
+            "compilationOptions": {
+                "outputName": "nautilus",
+                "define": ["RELEASE", "TRACE", "CLI"],
+                "optimize": true,
+                "emitEntryPoint": true
+            }
+        },
+        "Release-Lib": {
+            "compilationOptions": {
+                "outputName": "Nautilus",
+                "define": ["RELEASE", "TRACE", "LIB"],
+                "optimize": true,
+                "emitEntryPoint": false
+            }
+        }
+    }
+}
