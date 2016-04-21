@@ -1,8 +1,10 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using Microsoft.Win32;
 
 namespace Nautilus
@@ -52,7 +54,7 @@ namespace Nautilus
              
             Log.Write($"Installing tentacle from {filePath}... ");
             var output = new StringBuilder();
-            if (RunProcess("msiexec", $"INSTALLLOCATION=\"{installLocation}\" /i \"{filePath}\" /quiet", output))
+            if (RunProcess("msiexec", $"INSTALLLOCATION=\"{installLocation}\" /i \"{filePath}\" /quiet", output, 5, new[] { 1618 }))
             {                      
                 Log.WriteLine("done");                
                 Log.WriteLine(Indent(output.ToString()));
@@ -85,9 +87,8 @@ namespace Nautilus
             Log.WriteLine(Indent(output.ToString()));            
             return 1;
         }
-        
-        
-        private static bool RunProcess(string fileName, string arguments, StringBuilder output)
+             
+        private static bool RunProcess(string fileName, string arguments, StringBuilder output, int retryCount = 0, int[] retryCodes = null)
         {
             output.AppendLine($"{fileName} {arguments}");
             
@@ -101,25 +102,36 @@ namespace Nautilus
                 CreateNoWindow = true
             };
             
+            var exitCode = -1;
             using (var process = Process.Start(startInfo))
             {
                 const int timeout = 120000;
-                if (!process.WaitForExit(timeout))
+                if (process.WaitForExit(timeout))
                 {
-                    output.AppendLine($"Error: Operation timed out ({timeout} milliseconds)");
-                    return false;
-                }
-                                    
-                if (process.ExitCode != 0)
-                {                    
-                    output.AppendLine($"Error: Operation failed and exited with code {process.ExitCode}");
-                    output.AppendLine(process.StandardError.ReadToEnd());
-                    return false;
+                    exitCode = process.ExitCode;
+                    if (exitCode != 0)
+                    {
+                        output.AppendLine($"Error: Operation failed and exited with code {exitCode}");
+                        output.AppendLine(process.StandardError.ReadToEnd());
+                    }
+                }                
+                else
+                {  
+                    output.AppendLine($"Error: Operation timed out ({timeout/1000} seconds)");
                 }
                 
-                output.AppendLine(process.StandardOutput.ReadToEnd());                
-                return true;
+                output.AppendLine(process.StandardOutput.ReadToEnd()); 
             }
+            
+            if (retryCount > 0 && ((retryCodes == null && exitCode != 0) || (retryCodes != null && retryCodes.Contains(exitCode))))
+            {                
+                const int retryInterval = 60000;
+                output.AppendLine($"Retrying in {retryInterval/1000} seconds");
+                Thread.Sleep(retryInterval);
+                RunProcess(fileName, arguments, output, retryCount - 1, retryCodes);
+            }
+            
+            return exitCode == 0;
         }
     }
 }
