@@ -8,23 +8,23 @@ cache: C:\Users\appveyor\.nuget\packages
 build_script:
 - ps: >-
     dotnet build src\Nautilus --configuration Release-Lib
-    
-    dotnet build src\Nautilus --configuration Release-Cli    
+
+    dotnet build src\Nautilus --configuration Release-Cli
 
     nuget install LibZ.Tool -Version 1.2.0
 
     .\LibZ.Tool.1.2.0.0\tools\libz.exe inject-dll --assembly ".\src\Nautilus\bin\Release-Cli\dnx451\win7-x64\nautilus.exe" --include ".\src\Nautilus\bin\Release-Cli\dnx451\win7-x64\*.dll" --move
 
     Get-ChildItem .\src\Nautilus\bin\Release-Cli\dnx451\win7-x64\nautilus.exe | % { Push-AppveyorArtifact $_.FullName }
-    
+
     md output\chocolatey
-    
+
     nuget pack Chocolatey.nuspec -NoPackageAnalysis -OutputDirectory output\chocolatey
 
     Get-ChildItem .\output\chocolatey\nautilus.*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName "chocolatey-$_.Name" -DeploymentName Chocolatey }
-    
+
     md output\nuget
-    
+
     nuget pack NuGet.nuspec -NoPackageAnalysis -OutputDirectory output\nuget
 
     Get-ChildItem .\output\nuget\nautilus.*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName "nuget-$_.Name" -DeploymentName NuGet }
@@ -41,11 +41,22 @@ deploy:
     secure: ajroRFK4yrBdtuy7wNRKY5evo9TCGzz0wRzeemVUMHYXQ61AU/6c37A+3hZw/vc2
   prerelease: false
   on:
+    branch: master
     appveyor_repo_tag: true
 - provider: NuGet
   server: https://chocolatey.org/
   api_key:
     secure: wCneazo7/uf7Y9f4rDIFQ8z33kEWQGS/gcxPhQlB1X7mudqlLTGp5xeWCly3zZ4G
+  skip_symbols: true
   artifact: Chocolatey
   on:
+    branch: master
+    appveyor_repo_tag: true
+- provider: NuGet
+  api_key:
+    secure: l5pokJf/CEzqI6kb+nvdmvHw982ZLEHTxVZQpvZqyE6VEchEiR5XQkDjely3++ke
+  skip_symbols: true
+  artifact: NuGet
+  on:
+    branch: master
     appveyor_repo_tag: true

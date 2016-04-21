@@ -15,7 +15,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="src\Nautilus\bin\Release-Lib\dnx451\win7-x64\Nautilus.dll" target="lib"/>
+    <file src="src\Nautilus\bin\Release-Lib\dnx451\Nautilus.dll" target="lib"/>
     <file src="src\Nautilus\bin\Release-Cli\dnx451\win7-x64\nautilus.exe" target="tools"/>
   </files>
 </package>
