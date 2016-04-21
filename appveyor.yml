@@ -21,13 +21,13 @@ build_script:
 
     nuget pack Chocolatey.nuspec -NoPackageAnalysis -OutputDirectory output\chocolatey
 
-    Get-ChildItem .\output\chocolatey\nautilus.*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName "chocolatey-$_.Name" -DeploymentName Chocolatey }
+    Get-ChildItem .\output\chocolatey\nautilus.*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName "chocolatey-$($_.Name)" -DeploymentName Chocolatey }
 
     md output\nuget
 
     nuget pack NuGet.nuspec -NoPackageAnalysis -OutputDirectory output\nuget
 
-    Get-ChildItem .\output\nuget\nautilus.*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName "nuget-$_.Name" -DeploymentName NuGet }
+    Get-ChildItem .\output\nuget\nautilus.*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName "nuget-$($_.Name)" -DeploymentName NuGet }
 
     $rnp = Resolve-Path(".\RELEASENOTES.md")
 
