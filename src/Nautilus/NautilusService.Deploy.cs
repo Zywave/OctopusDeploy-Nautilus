@@ -103,7 +103,7 @@ namespace Nautilus
                     catch (OctopusValidationException ex)
                     {
                         Log.WriteLine("invalid");
-                        Log.WriteLine(Indent(ex.ToString()));
+                        Log.WriteLine(Indent(ex.ErrorMessage));
                     }
                 }
             }
