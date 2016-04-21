@@ -1,5 +1,5 @@
 {
-    "version": "1.0.4",
+    "version": "1.1.0",
     "dependencies": {
         "CommandLineParser": "2.0.275-beta",
         "Octopus.Client": "3.3.4"
@@ -13,21 +13,33 @@
         "Debug-Cli": {
             "compilationOptions": {
                 "outputName": "nautilus",
-                "define": ["DEBUG", "TRACE", "CLI"],
+                "define": [
+                    "DEBUG",
+                    "TRACE",
+                    "CLI"
+                ],
                 "emitEntryPoint": true
             }
         },
         "Debug-Lib": {
             "compilationOptions": {
                 "outputName": "Nautilus",
-                "define": ["DEBUG", "TRACE", "LIB"],
+                "define": [
+                    "DEBUG",
+                    "TRACE",
+                    "LIB"
+                ],
                 "emitEntryPoint": false
             }
         },
         "Release-Cli": {
             "compilationOptions": {
                 "outputName": "nautilus",
-                "define": ["RELEASE", "TRACE", "CLI"],
+                "define": [
+                    "RELEASE",
+                    "TRACE",
+                    "CLI"
+                ],
                 "optimize": true,
                 "emitEntryPoint": true
             }
@@ -35,7 +47,11 @@
         "Release-Lib": {
             "compilationOptions": {
                 "outputName": "Nautilus",
-                "define": ["RELEASE", "TRACE", "LIB"],
+                "define": [
+                    "RELEASE",
+                    "TRACE",
+                    "LIB"
+                ],
                 "optimize": true,
                 "emitEntryPoint": false
             }
