@@ -1,9 +1,14 @@
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.0.4...v1.1.0) (2016-04-21)
+
+
+### Bug Fixes
+
+* log error message of validation exception instead of full stack ([d9b3141](https://github.com/zywave/OctopusDeploy-Nautilus/commit/d9b3141))
+* not logging full exception string for validation errors ([32f9b52](https://github.com/zywave/OctopusDeploy-Nautilus/commit/32f9b52))
+* retry msi exec if another installer is running ([465533a](https://github.com/zywave/OctopusDeploy-Nautilus/commit/465533a)), closes [#12](https://github.com/zywave/OctopusDeploy-Nautilus/issues/12)
+
 ### Features
 
-* lib methods throw exceptions for errors rather than return error codes ([a1213b6](https://github.com/zywave/OctopusDeploy-Nautilus/commit/a1213b6))
+* library build and packaging ([dce3de2](https://github.com/zywave/OctopusDeploy-Nautilus/commit/dce3de2))
 
-
-### BREAKING CHANGES
-
-* INautilusService methods no longer return codes, but
-instead throw exceptions with an error code attached
