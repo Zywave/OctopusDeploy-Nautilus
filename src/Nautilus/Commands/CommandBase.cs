@@ -24,6 +24,16 @@ namespace Nautilus.Commands
             }
             catch (NautilusException ex)
             {
+                Console.Error.WriteLine(ex.Message);
+                if (!String.IsNullOrEmpty(ex.MessageDetails))
+                {
+                    Console.Error.WriteLine(ex.MessageDetails);
+                }
+                if (ex.InnerException != null)
+                {
+                    Console.Error.WriteLine(ex.InnerException.ToString());
+                }
+                
                 return ex.ErrorCode;
             }
             

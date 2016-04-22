@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using Octopus.Client.Exceptions;
 using Microsoft.Win32;
 
 namespace Nautilus
@@ -12,80 +13,95 @@ namespace Nautilus
     public partial class NautilusService
     {   
         public void Install(string installLocation = null, string homeLocation = null, string appLocation = null, string thumbprint = null, int? port = null)
-        {            
-            var existingInstallLocation = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Octopus\Tentacle", "InstallLocation", null) as string;
-            if (existingInstallLocation != null)
-            {
-                Log.WriteLine("Octopus Tentacle is already installed.");
-                return;
-            }
-            
-            installLocation = installLocation ?? Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), @"Octopus Deploy\Tentacle");
-            
-            homeLocation = homeLocation ?? Environment.GetEnvironmentVariable("SYSTEMDRIVE") + @"\Octopus";
-            homeLocation = homeLocation.TrimEnd(Path.DirectorySeparatorChar);
-            
-            appLocation = appLocation ?? Path.Combine(homeLocation, "Applications");
-            appLocation = appLocation.TrimEnd(Path.DirectorySeparatorChar);
-            
-            if (thumbprint == null)
-            {
-                var certicate = Octopus.GetGlobalCertificate();
-                thumbprint = certicate.Thumbprint;
-            }
-                        
-            port = port ?? 10933;
-            
-            var systemInfo = Octopus.GetSystemInfo();        
-            var downloadVersion = systemInfo.Version;            
-            if (Environment.Is64BitOperatingSystem)
-            {
-                downloadVersion += "-x64";
-            }            
-            var downloadUrl = $"http://download.octopusdeploy.com/octopus/Octopus.Tentacle.{downloadVersion}.msi";            
-            var filePath = $"{Path.GetTempPath()}Octopus.Tentacle.{downloadVersion}.msi";
-            
-            Log.Write($"Downloading installer from {downloadUrl} to {filePath}... ");
-            using (var webClient = new WebClient())
-            {
-                webClient.DownloadFile(downloadUrl, filePath);
-            }
-            Log.WriteLine("done");       
-             
-            Log.Write($"Installing tentacle from {filePath}... ");
-            var output = new StringBuilder();
-            if (RunProcess("msiexec", $"INSTALLLOCATION=\"{installLocation}\" /i \"{filePath}\" /quiet", output, 5, new[] { 1618 }))
-            {                      
-                Log.WriteLine("done");                
-                Log.WriteLine(Indent(output.ToString()));
-                
-                Log.Write("Configuring tentacle... ");            
-                var tentacleExe = installLocation + @"\Tentacle.exe";     
-                
-                var configFilePath = $"{homeLocation}\\Tentacle.config";
-                if (File.Exists(configFilePath))
+        {    
+            try
+            {                   
+                var existingInstallLocation = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Octopus\Tentacle", "InstallLocation", null) as string;
+                if (existingInstallLocation != null)
                 {
-                    File.Delete(configFilePath);
-                }
-                
-                output.Clear(); 
-                if (RunProcess(tentacleExe, $"create-instance --instance \"Tentacle\" --config \"{configFilePath}\" --console", output))
-                if (RunProcess(tentacleExe, $"new-certificate --instance \"Tentacle\" --if-blank --console", output))
-                if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --reset-trust --console", output))
-                if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --home \"{homeLocation}\" --app \"{appLocation}\" --port \"{port}\" --console", output))
-                if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --trust \"{thumbprint}\" --console", output))
-                if (RunProcess("netsh", $"advfirewall firewall add rule \"name=Octopus Deploy Tentacle\" dir=in action=allow protocol=TCP localport={port}", output))
-                if (RunProcess(tentacleExe, $"service --instance \"Tentacle\" --install --start --console", output))
-                {
-                    Log.WriteLine("done");
-                    Log.WriteLine(Indent(output.ToString()));
+                    Log.WriteLine("Octopus Tentacle is already installed.");
                     return;
                 }
+                
+                installLocation = installLocation ?? Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), @"Octopus Deploy\Tentacle");
+                
+                homeLocation = homeLocation ?? Environment.GetEnvironmentVariable("SYSTEMDRIVE") + @"\Octopus";
+                homeLocation = homeLocation.TrimEnd(Path.DirectorySeparatorChar);
+                
+                appLocation = appLocation ?? Path.Combine(homeLocation, "Applications");
+                appLocation = appLocation.TrimEnd(Path.DirectorySeparatorChar);
+                
+                port = port ?? 10933;
+                
+                if (thumbprint == null)
+                {
+                    var certicate = Octopus.GetGlobalCertificate();
+                    thumbprint = certicate.Thumbprint;
+                }
+                
+                var systemInfo = Octopus.GetSystemInfo();        
+                var downloadVersion = systemInfo.Version;            
+                if (Environment.Is64BitOperatingSystem)
+                {
+                    downloadVersion += "-x64";
+                }            
+                var downloadUrl = $"http://download.octopusdeploy.com/octopus/Octopus.Tentacle.{downloadVersion}.msi";            
+                var filePath = $"{Path.GetTempPath()}Octopus.Tentacle.{downloadVersion}.msi";
+                
+                Log.Write($"Downloading installer from {downloadUrl} to {filePath}... ");
+                using (var webClient = new WebClient())
+                {
+                    webClient.DownloadFile(downloadUrl, filePath);
+                }
+                Log.WriteLine("done");       
+                
+                Log.Write($"Installing tentacle from {filePath}... ");
+                var output = new StringBuilder();
+                if (RunProcess("msiexec", $"INSTALLLOCATION=\"{installLocation}\" /i \"{filePath}\" /quiet", output, 5, new[] { 1618 }))
+                {                      
+                    Log.WriteLine("done");                
+                    Log.WriteLine(Indent(output.ToString()));
+                    
+                    Log.Write("Configuring tentacle... ");            
+                    var tentacleExe = installLocation + @"\Tentacle.exe";     
+                    
+                    var configFilePath = $"{homeLocation}\\Tentacle.config";
+                    if (File.Exists(configFilePath))
+                    {
+                        File.Delete(configFilePath);
+                    }
+                    
+                    output.Clear(); 
+                    if (RunProcess(tentacleExe, $"create-instance --instance \"Tentacle\" --config \"{configFilePath}\" --console", output))
+                    if (RunProcess(tentacleExe, $"new-certificate --instance \"Tentacle\" --if-blank --console", output))
+                    if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --reset-trust --console", output))
+                    if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --home \"{homeLocation}\" --app \"{appLocation}\" --port \"{port}\" --console", output))
+                    if (RunProcess(tentacleExe, $"configure --instance \"Tentacle\" --trust \"{thumbprint}\" --console", output))
+                    if (RunProcess("netsh", $"advfirewall firewall add rule \"name=Octopus Deploy Tentacle\" dir=in action=allow protocol=TCP localport={port}", output))
+                    if (RunProcess(tentacleExe, $"service --instance \"Tentacle\" --install --start --console", output))
+                    {
+                        Log.WriteLine("done");
+                        Log.WriteLine(Indent(output.ToString()));
+                        return;
+                    }
+                }
+                
+                Log.WriteLine("failed");
+                Log.WriteLine(Indent(output.ToString()));            
+                throw NautilusException.TentacleInstallationFailed(output.ToString());             
             }
-            
-            Log.WriteLine("failed");
-            Log.WriteLine(Indent(output.ToString()));            
-            throw new NautilusException(NautilusErrorCodes.TentacleInstallationFailed, output.ToString());
+            catch (NautilusException)
+            {
+                throw;
+            }
+            catch (OctopusException ex)
+            {
+                throw NautilusException.OctopusError(ex);
+            }
+            catch (Exception ex)
+            {
+                throw NautilusException.UnknownError(ex);
+            } 
         }
              
         private static bool RunProcess(string fileName, string arguments, StringBuilder output, int retryCount = 0, int[] retryCodes = null)

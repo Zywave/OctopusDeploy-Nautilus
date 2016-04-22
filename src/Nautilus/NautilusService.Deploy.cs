@@ -11,102 +11,115 @@ namespace Nautilus
     {   
         public void Deploy(string machineName = null, bool wait = false, bool force = false, int? nonce = null)
         {
-            machineName = machineName ?? Environment.MachineName;
+            try
+            {     
+                if (nonce.HasValue && CheckAndUpdateNonces(nonce.Value))
+                {
+                    Log.WriteLine($"Preventing repeat deploy based on the specified nonce value ({nonce.Value})");
+                    return;
+                }                      
+                          
+                machineName = machineName ?? Environment.MachineName;                   
+                var machine = Octopus.GetMachine(machineName);
+                if (machine == null)
+                {
+                    Log.WriteLine($"Error: The target machine ({machineName}) is not registered with Octopus");
+                    throw NautilusException.MachineNotRegistered(machineName);
+                }       
                             
-            var machine = Octopus.GetMachine(machineName);
-            if (machine == null)
-            {
-                var message = $"The target machine ({machineName}) is not registered with Octopus";
-                Log.WriteLine($"Error: {message}");
-                throw new NautilusException(NautilusErrorCodes.MachineNotRegistered, message);
-            }
-            
-            if (nonce.HasValue && CheckAndUpdateNonces(nonce.Value))
-            {
-                Log.WriteLine($"Preventing repeat deploy based on the specified nonce value ({nonce.Value})");
-                return;
-            }            
-                        
-            var environments = Octopus.GetEnvironments().ToDictionary(i => i.Id);
-            
-            Log.WriteLine($"Target machine: {machine.Id} {machine.Name} {String.Join(",", machine.Roles)} {String.Join(",", machine.EnvironmentIds.Select(e => GetEnvironmentName(e, environments)))}");
-            
-            Log.WriteLine($"Finding projects with the target roles ({String.Join(",", machine.Roles)})...");
-            
-            var matchedProjects = new Dictionary<string, ProjectResource>();            
-            var projects = Octopus.GetProjects();
-            foreach(var project in projects) 
-            {
-                var deploymentProcess = Octopus.GetDeploymentProcess(project.DeploymentProcessId);
+                var environments = Octopus.GetEnvironments().ToDictionary(i => i.Id);
                 
-                if (HasAnyRole(deploymentProcess, machine.Roles))
+                Log.WriteLine($"Target machine: {machine.Id} {machine.Name} {String.Join(",", machine.Roles)} {String.Join(",", machine.EnvironmentIds.Select(e => GetEnvironmentName(e, environments)))}");
+                
+                Log.WriteLine($"Finding projects with the target roles ({String.Join(",", machine.Roles)})...");
+                
+                var matchedProjects = new Dictionary<string, ProjectResource>();            
+                var projects = Octopus.GetProjects();
+                foreach(var project in projects) 
                 {
-                    matchedProjects[project.Id] = project;
-                    Log.WriteLine(Indent($"{project.Id} {project.Name}"));
-                }
-            }
-            
-            if (!matchedProjects.Any())
-            {
-                Log.WriteLine(Indent("No projects found"));
-                return;
-            }
-            
-            var dashboard = Octopus.GetDynamicDashboard(matchedProjects.Keys, machine.EnvironmentIds);
-            
-            Log.WriteLine($"Creating deployments for target environments ({String.Join(",", machine.EnvironmentIds.Select(e => GetEnvironmentName(e, environments)))})...");
-            
-            var successExpression = new Regex($"Success: {machine.Name}{Environment.NewLine}");
-            
-            foreach(var item in dashboard.Items)
-            {
-                if (item.ReleaseId != null)
-                {
-                    var project = matchedProjects[item.ProjectId];
-                                        
-                    Log.Write($"{project.Name} {item.ReleaseVersion} -> {GetEnvironmentName(item.EnvironmentId, environments)}... ", 1);
+                    var deploymentProcess = Octopus.GetDeploymentProcess(project.DeploymentProcessId);
                     
-                    if (!force)
+                    if (HasAnyRole(deploymentProcess, machine.Roles))
                     {
-                        var releaseTask = Octopus.GetTask(item.TaskId);
-                        if (releaseTask.FinishedSuccessfully)
-                        {
-                            var rawOuput = Octopus.GetTaskRawOutputLog(releaseTask);
-                            if (successExpression.IsMatch(rawOuput))
-                            {
-                                Log.WriteLine("already deployed");
-                                continue;
-                            }
-                        }
+                        matchedProjects[project.Id] = project;
+                        Log.WriteLine(Indent($"{project.Id} {project.Name}"));
                     }
-                    
-                    try
+                }
+                
+                if (!matchedProjects.Any())
+                {
+                    Log.WriteLine(Indent("No projects found"));
+                    return;
+                }
+                
+                var dashboard = Octopus.GetDynamicDashboard(matchedProjects.Keys, machine.EnvironmentIds);
+                
+                Log.WriteLine($"Creating deployments for target environments ({String.Join(",", machine.EnvironmentIds.Select(e => GetEnvironmentName(e, environments)))})...");
+                
+                var successExpression = new Regex($"Success: {machine.Name}{Environment.NewLine}");
+                
+                foreach(var item in dashboard.Items)
+                {
+                    if (item.ReleaseId != null)
                     {
-                        var deployment = Octopus.CreateDeployment(machine.Id, item.ReleaseId, item.EnvironmentId, $"Nautilus: {machine.Id}");
+                        var project = matchedProjects[item.ProjectId];
+                                            
+                        Log.Write($"{project.Name} {item.ReleaseVersion} -> {GetEnvironmentName(item.EnvironmentId, environments)}... ", 1);
                         
-                        if (wait) 
+                        if (!force)
                         {
-                            var task = Octopus.WaitForTaskCompletion(deployment.TaskId);
-                            if (task.FinishedSuccessfully)
+                            var releaseTask = Octopus.GetTask(item.TaskId);
+                            if (releaseTask.FinishedSuccessfully)
                             {
-                                Log.WriteLine("succeeded");
+                                var rawOuput = Octopus.GetTaskRawOutputLog(releaseTask);
+                                if (successExpression.IsMatch(rawOuput))
+                                {
+                                    Log.WriteLine("already deployed");
+                                    continue;
+                                }
                             }
-                            else
-                            {
-                                Log.WriteLine("failed");
-                                Log.WriteLine(Indent(task.ErrorMessage));
-                            }
-                            continue;                        
                         }
+                        
+                        try
+                        {
+                            var deployment = Octopus.CreateDeployment(machine.Id, item.ReleaseId, item.EnvironmentId, $"Nautilus: {machine.Id}");
                             
-                        Log.WriteLine("created");
-                    }
-                    catch (OctopusValidationException ex)
-                    {
-                        Log.WriteLine("invalid");
-                        Log.WriteLine(Indent(ex.ErrorMessage));
+                            if (wait) 
+                            {
+                                var task = Octopus.WaitForTaskCompletion(deployment.TaskId);
+                                if (task.FinishedSuccessfully)
+                                {
+                                    Log.WriteLine("succeeded");
+                                }
+                                else
+                                {
+                                    Log.WriteLine("failed");
+                                    Log.WriteLine(Indent(task.ErrorMessage));
+                                }
+                                continue;                        
+                            }
+                                
+                            Log.WriteLine("created");
+                        }
+                        catch (OctopusValidationException ex)
+                        {
+                            Log.WriteLine("invalid");
+                            Log.WriteLine(Indent(ex.ErrorMessage));
+                        }
                     }
                 }
+            }
+            catch (NautilusException)
+            {
+                throw;
+            }
+            catch (OctopusException ex)
+            {
+                throw NautilusException.OctopusError(ex);
+            }
+            catch (Exception ex)
+            {
+                throw NautilusException.UnknownError(ex);
             }
         }
         

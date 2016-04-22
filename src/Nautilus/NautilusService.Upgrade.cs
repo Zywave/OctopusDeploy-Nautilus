@@ -1,4 +1,5 @@
 using System;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model.Endpoints;
 
 namespace Nautilus
@@ -7,54 +8,68 @@ namespace Nautilus
     {   
         public void Upgrade(string machineName = null)
         {
-            machineName = machineName ?? Environment.MachineName;
-                        
-            var machine = Octopus.GetMachine(machineName);
-            if (machine == null)
+            try 
             {
-                var message = $"The target machine ({machineName}) is not registered with Octopus";
-                Log.WriteLine($"Error: {message}");
-                throw new NautilusException(NautilusErrorCodes.MachineNotRegistered, message);
-            }
-            
-            var tentacleVersionDetails = (machine.Endpoint as ListeningTentacleEndpointResource)?.TentacleVersionDetails;            
-            if (tentacleVersionDetails != null && !tentacleVersionDetails.UpgradeLocked && (tentacleVersionDetails.UpgradeSuggested || tentacleVersionDetails.UpgradeRequired))
-            {
-                Log.Write("Updating Tentacle on target machine... ");
-                var task = Octopus.ExecuteTentacleUpgrade(machine.Id);
-                if (task.FinishedSuccessfully) 
+                machineName = machineName ?? Environment.MachineName;
+                            
+                var machine = Octopus.GetMachine(machineName);
+                if (machine == null)
                 {
-                    Log.WriteLine("succeeded");
+                    Log.WriteLine($"Error: The target machine ({machineName}) is not registered with Octopus");
+                    throw NautilusException.MachineNotRegistered(machineName);
                 }
-                else
+                
+                var tentacleVersionDetails = (machine.Endpoint as ListeningTentacleEndpointResource)?.TentacleVersionDetails;            
+                if (tentacleVersionDetails != null && !tentacleVersionDetails.UpgradeLocked && (tentacleVersionDetails.UpgradeSuggested || tentacleVersionDetails.UpgradeRequired))
                 {
-                    Log.WriteLine("failed");
-                    Log.WriteLine(task.ErrorMessage);
+                    Log.Write("Updating Tentacle on target machine... ");
+                    var task = Octopus.ExecuteTentacleUpgrade(machine.Id);
+                    if (task.FinishedSuccessfully) 
+                    {
+                        Log.WriteLine("succeeded");
+                    }
+                    else
+                    {
+                        Log.WriteLine("failed");
+                        Log.WriteLine(task.ErrorMessage);
+                    }
                 }
-            }
-            else 
-            {
-                Log.WriteLine("Tentacle is up to date");
-            }
-            
-            if (!machine.HasLatestCalamari)
-            {
-                Log.Write("Updating Calamari on target machine... ");
-                var task = Octopus.ExecuteCalamariUpdate(machine.Id);
-                if (task.FinishedSuccessfully) 
+                else 
                 {
-                    Log.WriteLine("succeeded");
+                    Log.WriteLine("Tentacle is up to date");
                 }
-                else
+                
+                if (!machine.HasLatestCalamari)
                 {
-                    Log.WriteLine("failed");
-                    Log.WriteLine(task.ErrorMessage);
+                    Log.Write("Updating Calamari on target machine... ");
+                    var task = Octopus.ExecuteCalamariUpdate(machine.Id);
+                    if (task.FinishedSuccessfully) 
+                    {
+                        Log.WriteLine("succeeded");
+                    }
+                    else
+                    {
+                        Log.WriteLine("failed");
+                        Log.WriteLine(task.ErrorMessage);
+                    }
+                }
+                else 
+                {
+                    Log.WriteLine("Calamari is up to date");
                 }
             }
-            else 
+            catch (NautilusException)
             {
-                Log.WriteLine("Calamari is up to date");
+                throw;
             }
+            catch (OctopusException ex)
+            {
+                throw NautilusException.OctopusError(ex);
+            }
+            catch (Exception ex)
+            {
+                throw NautilusException.UnknownError(ex);
+            } 
         }
     }
 }

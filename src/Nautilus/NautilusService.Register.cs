@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Octopus.Client.Exceptions;
 using Microsoft.Win32;
 
 namespace Nautilus
@@ -15,40 +16,54 @@ namespace Nautilus
             if (!environments.Any()) throw new ArgumentException("At lease one environment must be specified.", nameof(environments));
             if (roles == null) throw new ArgumentNullException(nameof(roles));
             if (!roles.Any()) throw new ArgumentException("At lease one environment must be specified.", nameof(roles));
-             
-            machineName = machineName ?? Environment.MachineName;            
-            hostName = hostName ?? Environment.MachineName;
-            port = port ?? 10933;
-                        
-            if (thumbprint == null)
-            {
-                thumbprint = GetTentacleThumbprint();
+            
+            try
+            {             
+                machineName = machineName ?? Environment.MachineName;            
+                hostName = hostName ?? Environment.MachineName;
+                port = port ?? 10933;
+                            
                 if (thumbprint == null)
                 {
-                    var message = "Could not determine thumbprint because an Octopus Tentacle is not installed on this machine";
-                    Log.WriteLine($"Error: {message}");
-                    throw new NautilusException(NautilusErrorCodes.TentacleNotInstalled, message);
+                    thumbprint = GetTentacleThumbprint();
+                    if (thumbprint == null)
+                    {
+                        Log.WriteLine($"Error: Could not determine thumbprint because an Octopus Tentacle is not installed on this machine");
+                        throw NautilusException.TentacleThumbprintNotFound("Octopus Tentacle is not installed on this machine.");
+                    }
                 }
-            }
-            
-            var machine = Octopus.GetMachine(machineName);
-            if (machine != null)
-            {
-                Log.WriteLine($"The machine ({machineName}) is already registered with Octopus");
                 
-                if (update)
+                var machine = Octopus.GetMachine(machineName);
+                if (machine != null)
                 {
-                    machine = Octopus.ModifyMachine(machine, thumbprint, hostName, port.Value, environments, roles);
+                    Log.WriteLine($"The machine ({machineName}) is already registered with Octopus");
                     
-                    Log.WriteLine($"Registration updated successfully");
+                    if (update)
+                    {
+                        machine = Octopus.ModifyMachine(machine, thumbprint, hostName, port.Value, environments, roles);
+                        
+                        Log.WriteLine($"Registration updated successfully");
+                    }
+                    
+                    return;
                 }
                 
-                return;
+                machine = Octopus.CreateMachine(machineName, thumbprint, hostName, port.Value, environments, roles);
+                
+                Log.WriteLine($"The machine ({machine.Name}) was registered successfully");            
             }
-            
-            machine = Octopus.CreateMachine(machineName, thumbprint, hostName, port.Value, environments, roles);
-            
-            Log.WriteLine($"The machine ({machine.Name}) was registered successfully");
+            catch (NautilusException)
+            {
+                throw;
+            }
+            catch (OctopusException ex)
+            {
+                throw NautilusException.OctopusError(ex);
+            }
+            catch (Exception ex)
+            {
+                throw NautilusException.UnknownError(ex);
+            } 
         }
         
         private static string GetTentacleThumbprint()

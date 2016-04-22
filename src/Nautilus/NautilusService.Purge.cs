@@ -1,4 +1,5 @@
 using System;
+using Octopus.Client.Exceptions;
 using Octopus.Client.Model;
 
 namespace Nautilus
@@ -9,16 +10,31 @@ namespace Nautilus
         {
             if (role == null) throw new ArgumentNullException(nameof(role));
             
-            var machines = Octopus.GetMachines(role);
-            foreach (var machine in machines)
+            try
             {
-                if (machine.Status == MachineModelStatus.Offline)
+                var machines = Octopus.GetMachines(role);
+                foreach (var machine in machines)
                 {
-                    Octopus.DeleteMachine(machine);
-                    
-                    Log.WriteLine($"{machine.Name} is offline and was unregistered successfully");
+                    if (machine.Status == MachineModelStatus.Offline)
+                    {
+                        Octopus.DeleteMachine(machine);
+                        
+                        Log.WriteLine($"{machine.Name} is offline and was unregistered successfully");
+                    }
                 }
             }
+            catch (NautilusException)
+            {
+                throw;
+            }
+            catch (OctopusException ex)
+            {
+                throw NautilusException.OctopusError(ex);
+            }
+            catch (Exception ex)
+            {
+                throw NautilusException.UnknownError(ex);
+            } 
         }
     }
 }
