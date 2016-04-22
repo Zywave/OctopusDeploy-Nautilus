@@ -21,9 +21,9 @@ namespace Nautilus.Commands
         [Option('p', "port", Required = false, HelpText = "The port of the Octopus Tentacle. Defaults to 10933.")]
         public int? Port { get; set; }
         
-        protected override int Run(INautilusService service)
+        protected override void Run(INautilusService service)
         {            
-            return service.Install(InstallLocation, HomeLocation, AppLocation, Thumbprint, Port);
+            service.Install(InstallLocation, HomeLocation, AppLocation, Thumbprint, Port);
         }
     }
 }

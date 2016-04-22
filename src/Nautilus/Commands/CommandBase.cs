@@ -17,10 +17,20 @@ namespace Nautilus.Commands
         {
             var octopusRepository = new OctopusRepository(new OctopusServerEndpoint(OctopusServerAddress, OctopusApiKey));
             var nautilusService = new NautilusService(octopusRepository, Console.Out);
-            return Run(nautilusService);
+            
+            try 
+            {
+                Run(nautilusService);
+            }
+            catch (NautilusException ex)
+            {
+                return ex.ErrorCode;
+            }
+            
+            return 0;
         }
 
-        protected abstract int Run(INautilusService service);        
+        protected abstract void Run(INautilusService service);        
     }    
 }
 #endif

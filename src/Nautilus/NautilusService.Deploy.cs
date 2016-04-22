@@ -9,21 +9,22 @@ namespace Nautilus
 {    
     public partial class NautilusService
     {   
-        public int Deploy(string machineName = null, bool wait = false, bool force = false, int? nonce = null)
+        public void Deploy(string machineName = null, bool wait = false, bool force = false, int? nonce = null)
         {
             machineName = machineName ?? Environment.MachineName;
                             
             var machine = Octopus.GetMachine(machineName);
             if (machine == null)
             {
-                Log.WriteLine($"Error: The target machine ({machineName}) is not registered with Octopus");
-                return 1;
+                var message = $"The target machine ({machineName}) is not registered with Octopus";
+                Log.WriteLine($"Error: {message}");
+                throw new NautilusException(NautilusErrorCodes.MachineNotRegistered, message);
             }
             
             if (nonce.HasValue && CheckAndUpdateNonces(nonce.Value))
             {
                 Log.WriteLine($"Preventing repeat deploy based on the specified nonce value ({nonce.Value})");
-                return 0;
+                return;
             }            
                         
             var environments = Octopus.GetEnvironments().ToDictionary(i => i.Id);
@@ -48,7 +49,7 @@ namespace Nautilus
             if (!matchedProjects.Any())
             {
                 Log.WriteLine(Indent("No projects found"));
-                return 0;
+                return;
             }
             
             var dashboard = Octopus.GetDynamicDashboard(matchedProjects.Keys, machine.EnvironmentIds);
@@ -107,8 +108,6 @@ namespace Nautilus
                     }
                 }
             }
-            
-            return 0;
         }
         
         private static bool HasAnyRole(DeploymentProcessResource deploymentProcess, IEnumerable<string> roles)

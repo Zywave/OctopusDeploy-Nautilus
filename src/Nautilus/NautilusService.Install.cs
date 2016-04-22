@@ -11,13 +11,13 @@ namespace Nautilus
 {    
     public partial class NautilusService
     {   
-        public int Install(string installLocation = null, string homeLocation = null, string appLocation = null, string thumbprint = null, int? port = null)
+        public void Install(string installLocation = null, string homeLocation = null, string appLocation = null, string thumbprint = null, int? port = null)
         {            
             var existingInstallLocation = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Octopus\Tentacle", "InstallLocation", null) as string;
             if (existingInstallLocation != null)
             {
                 Log.WriteLine("Octopus Tentacle is already installed.");
-                return 0;
+                return;
             }
             
             installLocation = installLocation ?? Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), @"Octopus Deploy\Tentacle");
@@ -79,13 +79,13 @@ namespace Nautilus
                 {
                     Log.WriteLine("done");
                     Log.WriteLine(Indent(output.ToString()));
-                    return 0;
+                    return;
                 }
             }
             
             Log.WriteLine("failed");
             Log.WriteLine(Indent(output.ToString()));            
-            return 1;
+            throw new NautilusException(NautilusErrorCodes.TentacleInstallationFailed, output.ToString());
         }
              
         private static bool RunProcess(string fileName, string arguments, StringBuilder output, int retryCount = 0, int[] retryCodes = null)

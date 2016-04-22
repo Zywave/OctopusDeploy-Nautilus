@@ -5,7 +5,7 @@ namespace Nautilus
 {    
     public partial class NautilusService
     {   
-        public int Purge(string role)
+        public void Purge(string role)
         {
             if (role == null) throw new ArgumentNullException(nameof(role));
             
@@ -18,9 +18,7 @@ namespace Nautilus
                     
                     Log.WriteLine($"{machine.Name} is offline and was unregistered successfully");
                 }
-            }            
-            
-            return 0;
+            }
         }
     }
 }

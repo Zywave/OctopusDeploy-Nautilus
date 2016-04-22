@@ -5,15 +5,16 @@ namespace Nautilus
 {    
     public partial class NautilusService
     {   
-        public int Upgrade(string machineName = null)
+        public void Upgrade(string machineName = null)
         {
             machineName = machineName ?? Environment.MachineName;
                         
             var machine = Octopus.GetMachine(machineName);
             if (machine == null)
             {
-                Log.WriteLine($"Error: The target machine ({machineName}) is not registered with Octopus");
-                return 1;
+                var message = $"The target machine ({machineName}) is not registered with Octopus";
+                Log.WriteLine($"Error: {message}");
+                throw new NautilusException(NautilusErrorCodes.MachineNotRegistered, message);
             }
             
             var tentacleVersionDetails = (machine.Endpoint as ListeningTentacleEndpointResource)?.TentacleVersionDetails;            
@@ -54,8 +55,6 @@ namespace Nautilus
             {
                 Log.WriteLine("Calamari is up to date");
             }
-            
-            return 0;
         }
     }
 }

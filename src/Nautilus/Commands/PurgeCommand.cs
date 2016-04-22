@@ -9,9 +9,9 @@ namespace Nautilus.Commands
         [Option('r', "role", Required = true, HelpText = "The machine role for which to purge offline nodes.")]
         public string Role { get; set; }
         
-        protected override int Run(INautilusService service)
+        protected override void Run(INautilusService service)
         {   
-            return service.Purge(Role);
+            service.Purge(Role);
         }
     }
 }

@@ -9,9 +9,9 @@ namespace Nautilus.Commands
         [Option('n', "name", Required = false, HelpText = "The machine name. Defaults to the local machine name.")]
         public string MachineName { get; set; }
         
-        protected override int Run(INautilusService service)
+        protected override void Run(INautilusService service)
         {            
-            return service.Unregister(MachineName);
+            service.Unregister(MachineName);
         }
     }
 }

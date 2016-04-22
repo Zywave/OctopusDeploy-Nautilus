@@ -28,9 +28,9 @@ namespace Nautilus.Commands
         [Option('u', "update", Required = false, HelpText = "Specifies whether to update an existing registration.")]
         public bool Update { get; set; }
         
-        protected override int Run(INautilusService service)
+        protected override void Run(INautilusService service)
         {
-            return service.Register(Environments, Roles, MachineName, Thumbprint, HostName, Port, Update);
+            service.Register(Environments, Roles, MachineName, Thumbprint, HostName, Port, Update);
         }
     }
 }
