@@ -1,9 +1,3 @@
-### Features
+### Bug Fixes
 
-* lib methods throw exceptions for errors rather than return error codes ([a1213b6](https://github.com/zywave/OctopusDeploy-Nautilus/commit/a1213b6))
-
-
-### BREAKING CHANGES
-
-* INautilusService methods no longer return codes, but
-instead throw exceptions with an error code attached
+* return correct status from process retry ([165278b](https://github.com/zywave/OctopusDeploy-Nautilus/commit/165278b))

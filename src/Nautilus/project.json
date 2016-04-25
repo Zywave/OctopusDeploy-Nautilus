@@ -1,5 +1,5 @@
 {
-    "version": "1.2.0",
+    "version": "1.2.1",
     "dependencies": {
         "CommandLineParser": "2.0.275-beta",
         "Octopus.Client": "3.3.4"

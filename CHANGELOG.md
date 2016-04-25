@@ -1,3 +1,13 @@
+<a name="1.2.1"></a>
+## [1.2.1](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.2.0...v1.2.1) (2016-04-25)
+
+
+### Bug Fixes
+
+* return correct status from process retry ([165278b](https://github.com/zywave/OctopusDeploy-Nautilus/commit/165278b))
+
+
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/zywave/OctopusDeploy-Nautilus/compare/1.1.0...v1.2.0) (2016-04-22)
 
