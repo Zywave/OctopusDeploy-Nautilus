@@ -144,7 +144,7 @@ namespace Nautilus
                 const int retryInterval = 60000;
                 output.AppendLine($"Retrying in {retryInterval/1000} seconds");
                 Thread.Sleep(retryInterval);
-                RunProcess(fileName, arguments, output, retryCount - 1, retryCodes);
+                return RunProcess(fileName, arguments, output, retryCount - 1, retryCodes);
             }
             
             return exitCode == 0;
