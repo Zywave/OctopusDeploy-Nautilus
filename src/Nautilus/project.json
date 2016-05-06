@@ -11,7 +11,7 @@
     },
     "configurations": {
         "Debug-Cli": {
-            "compilationOptions": {
+            "buildOptions": {
                 "outputName": "nautilus",
                 "define": [
                     "DEBUG",
@@ -22,7 +22,7 @@
             }
         },
         "Debug-Lib": {
-            "compilationOptions": {
+            "buildOptions": {
                 "outputName": "Nautilus",
                 "define": [
                     "DEBUG",
@@ -33,7 +33,7 @@
             }
         },
         "Release-Cli": {
-            "compilationOptions": {
+            "buildOptions": {
                 "outputName": "nautilus",
                 "define": [
                     "RELEASE",
@@ -45,7 +45,7 @@
             }
         },
         "Release-Lib": {
-            "compilationOptions": {
+            "buildOptions": {
                 "outputName": "Nautilus",
                 "define": [
                     "RELEASE",
