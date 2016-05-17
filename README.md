@@ -7,6 +7,8 @@
 
 Nautilus is a library and command line tool that helps to automate [Octopus](https://octopus.com/) deploys during horizontal scaling operations by determining all of the releases to deploy by the machine's role and environment.  It is also capable of downloading, installing, configuring, updating and registering the Octopus Tentacle.
 
+>Looks like [Octopus Deploy 3.4](https://github.com/OctopusDeploy/Issues/issues/2445) will introduce machine policies that could achieve the primary use case of this project without an extraneous tool.  Exciting!
+
 ## Install
 
 Nautilus is available via [Chocolatey](https://chocolatey.org/packages/nautilus), [NuGet](https://www.nuget.org/packages/nautilus) or direct download from [releases](https://github.com/Zywave/OctopusDeploy-Nautilus/releases/latest).  Additionally, a simple Powershell script that downloads the latest nautilus.exe into the current directory is available to simplify automation.
